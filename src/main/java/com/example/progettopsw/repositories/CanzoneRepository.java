@@ -1,13 +1,13 @@
 package com.example.progettopsw.repositories;
 
 import com.example.progettopsw.entities.Canzone;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface CanzoneRepository extends CrudRepository<Canzone, Long> {
+public interface CanzoneRepository extends JpaRepository<Canzone, Long> {
 
     /**
      * Trova canzoni con numero di ascolti superiore a X.

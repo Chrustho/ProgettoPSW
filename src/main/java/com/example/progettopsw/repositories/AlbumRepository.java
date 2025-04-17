@@ -2,18 +2,20 @@ package com.example.progettopsw.repositories;
 
 import com.example.progettopsw.entities.Album;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface AlbumRepository extends CrudRepository<Album, Long> {
+public interface AlbumRepository extends JpaRepository<Album, Long> {
 
     /**
      * Trova gli album di un artista specifico.
      */
-    List<Album> findByArtistaNomeIgnoreCase(String artistaNome);
+    List<Album> findByArtistaNomeIgnoreCaseAndNome(String artistaNome, String nome);
+
+    boolean existsAlbumByArtistaNomeIgnoreCaseAndNome(String artistaNome, String nome);
 
     /**
      * Album con media voto delle recensioni superiore alla soglia.

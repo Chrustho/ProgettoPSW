@@ -1,13 +1,13 @@
 package com.example.progettopsw.repositories;
 
 import com.example.progettopsw.entities.Band;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface BandRepository extends CrudRepository<Band, Long> {
+public interface BandRepository extends JpaRepository<Band, Long> {
 
     /**
      * Trova band con almeno N membri.

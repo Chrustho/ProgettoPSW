@@ -2,13 +2,13 @@ package com.example.progettopsw.repositories;
 
 import com.example.progettopsw.entities.RecensioneCanzone;
 import com.example.progettopsw.entities.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface RecensioneCanzoneRepository extends CrudRepository<RecensioneCanzone, Long> {
+public interface RecensioneCanzoneRepository extends JpaRepository<RecensioneCanzone, Long> {
 
     /**
      * Media voti per una canzone.

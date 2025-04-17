@@ -1,14 +1,14 @@
 package com.example.progettopsw.repositories;
 
 import com.example.progettopsw.entities.RecensioneAlbum;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface RecensioneAlbumRepository extends CrudRepository<RecensioneAlbum, Long> {
+public interface RecensioneAlbumRepository extends JpaRepository<RecensioneAlbum, Long> {
 
     /**
      * Recensioni di album fatte dopo la data specificata.
