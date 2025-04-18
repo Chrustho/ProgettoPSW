@@ -16,6 +16,11 @@ public interface ArtistaRepository extends JpaRepository<Artista,Long> {
     List<Artista> findByNomeContainingIgnoreCase(String nome);
 
     /**
+     * Trova il singolo artista con quell'id e nome
+     */
+    Artista findByIdAndNome(Long id, String nome);
+
+    /**
      * Trova artisti che hanno pubblicato almeno un album nell'intervallo di anni indicato.
      */
     @Query("SELECT DISTINCT a FROM Artista a JOIN a.albums al " +

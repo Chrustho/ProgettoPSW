@@ -15,6 +15,11 @@ public interface BandRepository extends JpaRepository<Band, Long> {
     @Query("SELECT b FROM Band b WHERE SIZE(b.membri) >= :minMembers")
     List<Band> findByMinMemberCount(@Param("minMembers") int minMembers);
 
+    /*
+    * Trova band con Nome
+     */
+    Band findByNome(String nome);
+
     /**
      * Band i cui membri suonano uno specifico strumento.
      */

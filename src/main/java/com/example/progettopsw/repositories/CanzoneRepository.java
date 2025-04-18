@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface CanzoneRepository extends JpaRepository<Canzone, Long> {
 
+
     /**
      * Trova canzoni con numero di ascolti superiore a X.
      */
