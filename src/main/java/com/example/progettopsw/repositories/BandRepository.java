@@ -9,12 +9,6 @@ import java.util.List;
 
 public interface BandRepository extends JpaRepository<Band, Long> {
 
-    /**
-     * Trova band con almeno N membri.
-     */
-    @Query("SELECT b FROM Band b WHERE SIZE(b.membri) >= :minMembers")
-    List<Band> findByMinMemberCount(@Param("minMembers") int minMembers);
-
     /*
     * Trova band con Nome
      */
@@ -47,5 +41,35 @@ public interface BandRepository extends JpaRepository<Band, Long> {
     """)
     List<Band> findTopStreamedBands(@Param("minStreams") long minStreams);
 
+    // ————— Cerca band che hanno almeno un genere tra quelli indicati
+    @Query("""
+      SELECT DISTINCT b
+      FROM Band b
+      JOIN b.generi g
+      WHERE g.nome IN :generi
+    """)
+    List<Band> findByAnyGenre(@Param("generi") List<String> generi);
+
+    // ————— Cerca band che hanno TUTTI i generi indicati
+    @Query("""
+      SELECT b
+      FROM Band b
+      JOIN b.generi g
+      WHERE g.nome IN :generi
+      GROUP BY b
+      HAVING COUNT(DISTINCT g.nome) = :size
+    """)
+    List<Band> findByAllGenres(@Param("generi") List<String> generi,
+                               @Param("size") long size);
+
+
+    // ————— Band seguite da uno specifico utente
+    @Query("""
+      SELECT DISTINCT b
+      FROM Band b
+      JOIN b.follower u
+      WHERE u.id = :userId
+    """)
+    List<Band> findFollowedByUser(@Param("userId") Long userId);
 
 }

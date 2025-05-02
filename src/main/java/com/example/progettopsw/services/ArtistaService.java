@@ -1,9 +1,7 @@
 package com.example.progettopsw.services;
 
-import com.example.progettopsw.entities.Album;
 import com.example.progettopsw.entities.Artista;
 import com.example.progettopsw.repositories.ArtistaRepository;
-import com.example.progettopsw.support.exceptions.ArtistaGiaPresente;
 import com.example.progettopsw.support.exceptions.ArtistaGiaPresenteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
