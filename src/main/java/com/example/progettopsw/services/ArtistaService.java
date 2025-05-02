@@ -4,6 +4,7 @@ import com.example.progettopsw.entities.Album;
 import com.example.progettopsw.entities.Artista;
 import com.example.progettopsw.repositories.ArtistaRepository;
 import com.example.progettopsw.support.exceptions.ArtistaGiaPresente;
+import com.example.progettopsw.support.exceptions.ArtistaGiaPresenteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,9 +61,26 @@ public class ArtistaService {
     @Transactional(readOnly = false)
     public Artista aggiungiArtista(Artista artista){
         if (artistaRepository.findByIdAndNome(artista.getId(),artista.getNome())!=null){
-            throw new ArtistaGiaPresente();
+            throw new ArtistaGiaPresenteException();
         }
         return artistaRepository.save(artista);
     }
+
+    @Transactional(readOnly = true)
+    public List<Artista> trovaArtistiConAlmenoUnGenere(List<String> generi){
+        return artistaRepository.findByAnyGenre(generi);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Artista> trovaArtistiConTuttiIGeneri(List<String> generi, long size){
+        return artistaRepository.findByAllGenres(generi, size);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Artista> artistiConReleaseRecenti(int years){
+        return artistaRepository.findActiveInLastYears(years);
+    }
+
+
 
 }

@@ -30,14 +30,6 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     @Query("SELECT al FROM Album al WHERE al.utentiDaAscoltare IS EMPTY")
     List<Album> findUnqueuedAlbums();
 
-    // album con generi multipli
-    @Query("""
-      SELECT al FROM Album al
-      JOIN al.generi g
-      GROUP BY al
-      HAVING COUNT(g) > :minGenres
-    """)
-    List<Album> findAlbumsWithMultipleGenres(@Param("minGenres") long minGenres);
 
     // album pìù aggiunti più volte nella wishlist (albumPreferiti)
     @Query("""
@@ -47,4 +39,39 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
       ORDER BY COUNT(u) DESC
     """)
     List<Album> findMostWishlistedAlbums(Pageable pageable);
+
+
+    // album con almeno un genere tra quelli posti in input
+    @Query("""
+    SELECT DISTINCT al FROM Album al
+    JOIN al.generi g
+    WHERE g.nome IN :generi
+    """)
+    List<Album> findAlbumsByAnyGenre(@Param("generi") List<String> generi);
+
+    // album con TUTTI i generi passati in input
+
+    @Query("""
+    SELECT al FROM Album al
+    JOIN al.generi g
+    WHERE g.nome IN :generi
+    GROUP BY al
+    HAVING COUNT(DISTINCT g.nome) = :size
+    """)
+    List<Album> findAlbumsByAllGenres(@Param("generi") List<String> generi, @Param("size") long size);
+
+
+    // migliori album di un dato genere
+
+    @Query("""
+    SELECT al FROM Album al
+    JOIN al.generi g
+    JOIN al.recensioniAlbum r
+    WHERE g.nome = :genere
+    GROUP BY al
+    HAVING AVG(r.voto) >= :soglia
+    """)
+    List<Album> findTopRatedAlbumsByGenres(@Param("genere") String genere, @Param("soglia") double soglia);
+
+
 }

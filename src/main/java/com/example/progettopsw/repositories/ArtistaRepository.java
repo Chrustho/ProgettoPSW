@@ -69,6 +69,41 @@ public interface ArtistaRepository extends JpaRepository<Artista,Long> {
     """)
     List<Artista> findTopStreamingArtists(Pageable pageable);
 
+    // ————— Cerca artisti che abbiano almeno un genere tra quelli indicati
+    @Query("""
+      SELECT DISTINCT a
+      FROM Artista a
+      JOIN a.generi g
+      WHERE g.nome IN :generi
+    """)
+    List<Artista> findByAnyGenre(@Param("generi") List<String> generi);
+    /** Artisti con almeno un genere in `generi`. */
+
+
+    // ————— Cerca artisti che abbiano TUTTI i generi indicati
+    @Query("""
+      SELECT a
+      FROM Artista a
+      JOIN a.generi g
+      WHERE g.nome IN :generi
+      GROUP BY a
+      HAVING COUNT(DISTINCT g.nome) = :size
+    """)
+    List<Artista> findByAllGenres(@Param("generi") List<String> generi,
+                                  @Param("size") long size);
+    /** Artisti i cui generi includono tutti i nomi passati. */
+
+
+    // ————— Artisti attivi negli ultimi N anni
+    @Query("""
+      SELECT DISTINCT a
+      FROM Artista a
+      JOIN a.albums al
+      WHERE al.annoRilascio >= YEAR(CURRENT_DATE) - :years
+    """)
+    List<Artista> findActiveInLastYears(@Param("years") int years);
+    /** Artisti che hanno pubblicato almeno un album negli ultimi `years` anni. */
+
 
 }
 

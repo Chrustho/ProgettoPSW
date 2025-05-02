@@ -20,7 +20,6 @@ public class AlbumService {
     @Autowired
     private AlbumRepository albumRepository;
 
-
     @Transactional(readOnly = true)
     public List<Album> mostraTuttiGliAlbum(int pageNumber, int pageSize, String sortBy){
         Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
@@ -48,10 +47,6 @@ public class AlbumService {
         return albumRepository.findUnqueuedAlbums();
     }
 
-    @Transactional(readOnly = true)
-    public List<Album> trovaAlbumConAlmenoNGeneri(long minGenres){
-        return albumRepository.findAlbumsWithMultipleGenres(minGenres);
-    }
 
     @Transactional(readOnly = true)
     public List<Album> mostraAlbumPiuDesiderati(int pageNumber, int pageSize, String sortBy){
@@ -63,6 +58,21 @@ public class AlbumService {
         else {
             return new ArrayList<>();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Album> trovaAlbumConAlmenoUnGenereSpecificato(List<String> generi){
+        return albumRepository.findAlbumsByAnyGenre(generi);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Album> trovaAlbumConTuttiIGeneriSpecificati(List<String> generi){
+        return albumRepository.findAlbumsByAllGenres(generi,generi.size());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Album> trovaMiglioriAlbumDiUnDatoGenere(String genere, double soglia){
+        return albumRepository.findTopRatedAlbumsByGenres(genere,soglia);
     }
 
     @Transactional(readOnly = false)
