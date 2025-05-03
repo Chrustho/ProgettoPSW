@@ -25,10 +25,6 @@ public class UserService {
         return userRepository.findPowerUsers(m,n);
     }
 
-    @Transactional(readOnly = true)
-    public List<User> utentiConGustiSimili(){
-        return userRepository.findUsersReviewingSameArtistContent();
-    }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public User registraUtente(User user){

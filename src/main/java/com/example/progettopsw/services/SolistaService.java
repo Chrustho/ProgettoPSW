@@ -26,16 +26,6 @@ public class SolistaService {
     }
 
     @Transactional(readOnly = true)
-    public List<Solista> trovaMusicistiSenzaBand(){
-        return solistaRepository.findMusicistiSenzaBand();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Solista> trovaSolistiConPiuDiNAlbumRegistrati(long n){
-        return solistaRepository.findArtistiConPiuDiNAlbum(n);
-    }
-
-    @Transactional(readOnly = true)
     public List<Solista> trovaSolistaConPiuDiNStream(long minStreams){
         return solistaRepository.findHighStreamingSolisti(minStreams);
     }

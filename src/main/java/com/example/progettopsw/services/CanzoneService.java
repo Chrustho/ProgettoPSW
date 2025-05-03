@@ -23,7 +23,7 @@ public class CanzoneService {
     @Transactional(readOnly = false)
     public void aggiungiCanzone(Canzone canzone) {
         if (canzone.getNome() != null && canzone.getAlbum() != null) {
-            if (canzoneRepository.existByNomeIgnoreCaseAndAlbum_Nome(canzone.getNome(), canzone.getAlbum().getNome())) {
+            if (canzoneRepository.existsByNomeEqualsIgnoreCaseAndAlbum_Nome(canzone.getNome(), canzone.getAlbum().getNome())) {
                 throw new CanzoneGiaPresenteException("Canzone già presente!");
             } else {
                 canzoneRepository.save(canzone);

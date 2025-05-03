@@ -19,18 +19,6 @@ public interface SolistaRepository extends JpaRepository<Solista, Long> {
      */
     List<Solista> findByStrumentoIgnoreCase(String strumento);
 
-    /**
-     * Trova solisti che non fanno parte di alcuna band.
-     */
-    @Query("SELECT s FROM Solista s WHERE s.bands IS EMPTY")
-    List<Solista> findMusicistiSenzaBand();
-
-    /**
-     * Solisti che hanno registrato più di N album come artisti principali.
-     * Usa la relazione indiretta albums di Artista.
-     */
-    @Query("SELECT s FROM Solista s JOIN s.albums al GROUP BY s HAVING COUNT(al) > :n")
-    List<Solista> findArtistiConPiuDiNAlbum(@Param("n") long n);
 
     // solisti con totale stream > soglia
     @Query("""

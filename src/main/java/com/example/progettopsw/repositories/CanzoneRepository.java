@@ -12,7 +12,7 @@ import java.util.List;
 public interface CanzoneRepository extends JpaRepository<Canzone, Long> {
 
 
-    Boolean existByNomeIgnoreCaseAndAlbum_Nome(String nome, String albumNome);
+    Boolean existsByNomeEqualsIgnoreCaseAndAlbum_Nome(String nome, String albumNome);
 
     /**
      * Le 5 canzoni più lunghe (durata maggiore).
