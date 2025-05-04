@@ -25,6 +25,25 @@ public class UserService {
         return userRepository.findPowerUsers(m,n);
     }
 
+    @Transactional(readOnly = true)
+    public List<User> trovaPerNomeOCognome(String nome, String cognome){
+        return userRepository.findByNomeContainingIgnoreCaseOrCognomeContainingIgnoreCase(nome, cognome);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> utentiACuiEPiacutoAlbum(Long albumId){
+        return userRepository.findUsersWhoFavoritedAlbum(albumId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> utentiCheSeguonoArtista(Long artistaId){
+        return userRepository.findUsersFollowingArtist(artistaId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> utentiCheSeguonoGenere(String nomeGenere){
+        return userRepository.findUsersFollowingGenre(nomeGenere);
+    }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public User registraUtente(User user){
@@ -33,4 +52,5 @@ public class UserService {
         }
         return userRepository.save(user);
     }
+
 }

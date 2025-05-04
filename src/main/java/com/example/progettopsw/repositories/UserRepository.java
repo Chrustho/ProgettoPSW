@@ -74,22 +74,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findUsersFollowingGenre(@Param("genreName") String genreName);
 
 
-    /**
-     * Utenti “top reviewers”: ordina per la media combinata di voti su album e canzoni.
-     */
-    @Query("""
-      SELECT u FROM User u
-      LEFT JOIN u.recensioniAlbum ra
-      LEFT JOIN u.recensioniCanzoni rc
-      GROUP BY u
-      HAVING (
-        COALESCE(AVG(ra.voto), 0) * COUNT(ra) +
-        COALESCE(AVG(rc.voto), 0) * COUNT(rc)
-      ) / 
-      (CASE WHEN COUNT(ra)+COUNT(rc)=0 THEN 1 ELSE COUNT(ra)+COUNT(rc) END)
-      >= :minAvg
-    """)
-    List<User> findTopReviewersByCombinedAverage(@Param("minAvg") double minAverage);
-
-
 }
