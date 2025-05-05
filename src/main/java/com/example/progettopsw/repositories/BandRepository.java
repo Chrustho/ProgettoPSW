@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface BandRepository extends JpaRepository<Band, Long> {
 
+    Band getBandById(Long id);
+
     /*
     * Trova band con Nome
      */

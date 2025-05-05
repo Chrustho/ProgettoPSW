@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface GenereRepository extends JpaRepository<Genere, Long> {
 
+    Genere getGenereById(Long id);
+
 
     Boolean findByNomeIgnoreCase(String nome);
     /**

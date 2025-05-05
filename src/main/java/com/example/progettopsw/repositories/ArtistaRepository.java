@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface ArtistaRepository extends JpaRepository<Artista,Long> {
 
+    Artista getArtistaById(Long id);
+
     /**
      * Trova tutti gli artisti il cui nome contiene la stringa passata (case-insensitive).
      */

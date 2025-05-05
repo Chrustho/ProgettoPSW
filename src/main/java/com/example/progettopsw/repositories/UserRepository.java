@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    User getUserById(Long id);
+
     /**
      * Utenti con almeno N recensioni di canzoni.
      */

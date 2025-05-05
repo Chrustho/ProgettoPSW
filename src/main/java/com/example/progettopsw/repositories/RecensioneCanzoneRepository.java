@@ -1,5 +1,6 @@
 package com.example.progettopsw.repositories;
 
+import com.example.progettopsw.entities.RecensioneAlbum;
 import com.example.progettopsw.entities.RecensioneCanzone;
 import com.example.progettopsw.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RecensioneCanzoneRepository extends JpaRepository<RecensioneCanzone, Long> {
+
+    RecensioneCanzone getRecensioneCanzoneById(Long id);
 
     /**
      * Media voti per una canzone.

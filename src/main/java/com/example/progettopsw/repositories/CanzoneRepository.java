@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface CanzoneRepository extends JpaRepository<Canzone, Long> {
 
+    Canzone getCanzoneById(Long id);
+
 
     Boolean existsByNomeEqualsIgnoreCaseAndAlbum_Nome(String nome, String albumNome);
 

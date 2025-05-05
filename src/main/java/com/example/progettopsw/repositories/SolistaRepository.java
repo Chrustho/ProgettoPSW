@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface SolistaRepository extends JpaRepository<Solista, Long> {
 
+    Solista getSolistaById(Long id);
+
     Boolean existsByNomeEqualsIgnoreCaseAndStrumentoEqualsIgnoreCase(String nome, String strumento);
     
     List<Solista> findByNomeIgnoreCase(String nome);

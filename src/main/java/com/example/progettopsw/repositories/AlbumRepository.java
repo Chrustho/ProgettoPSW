@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface AlbumRepository extends JpaRepository<Album, Long> {
 
+    Album getAlbumById(Long id);
+
     /**
      * Trova gli album di un artista specifico.
      */

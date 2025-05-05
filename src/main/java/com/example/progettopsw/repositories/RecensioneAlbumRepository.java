@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface RecensioneAlbumRepository extends JpaRepository<RecensioneAlbum, Long> {
 
+    RecensioneAlbum getRecensioneAlbumById(Long id);
+
     /**
      * Recensioni di album fatte dopo la data specificata.
      */

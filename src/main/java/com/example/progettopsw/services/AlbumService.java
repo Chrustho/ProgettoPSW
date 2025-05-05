@@ -1,8 +1,10 @@
 package com.example.progettopsw.services;
 
 import com.example.progettopsw.entities.Album;
+import com.example.progettopsw.entities.Canzone;
 import com.example.progettopsw.repositories.AlbumRepository;
 import com.example.progettopsw.support.exceptions.AlbumGiaPresenteException;
+import com.example.progettopsw.support.exceptions.ElementoNonTrovatoException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class AlbumService {
@@ -86,7 +89,16 @@ public class AlbumService {
         }
     }
 
-
+    @Transactional(readOnly = false)
+    public void aggiungiCanzone(Long albumId, Canzone canzone){
+        Album target= albumRepository.getAlbumById(albumId);
+        if (target==null){
+            throw new ElementoNonTrovatoException();
+        }
+        Set<Canzone> canzoni=target.getCanzoni();
+        canzoni.add(canzone);
+        albumRepository.save(target);
+    }
 
 
 
