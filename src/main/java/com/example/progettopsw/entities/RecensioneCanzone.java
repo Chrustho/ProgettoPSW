@@ -3,6 +3,8 @@ package com.example.progettopsw.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "recensione_canzone", schema = "orders")
 @Getter
@@ -20,6 +22,9 @@ public class RecensioneCanzone {
     @ManyToOne(optional = false)
     @JoinColumn(name = "canzone_id", nullable = false)
     private Canzone canzone;
+
+    @Column(name = "data_recensione")
+    private LocalDate dataRecensione;
 
     @Column(name = "voto", nullable = false)
     private Double voto;
