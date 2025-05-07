@@ -1,14 +1,16 @@
 package com.example.progettopsw.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "utente", schema = "orders")
+@Table(name = "utente", schema = "PSWDB")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -59,4 +61,8 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RecensioneCanzone> recensioniCanzoni = new HashSet<>();
+
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.MERGE)
+    private List<Acquisto> acquisti;
+
 }

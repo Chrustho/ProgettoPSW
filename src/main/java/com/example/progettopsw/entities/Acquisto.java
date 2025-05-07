@@ -16,7 +16,7 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "acquisti", schema = "orders")
+@Table(name = "acquisti", schema = "PSWDB")
 public class Acquisto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "genere", schema = "orders")
+@Table(name = "genere", schema = "PSWDB")
 @Getter
 @Setter
 @NoArgsConstructor

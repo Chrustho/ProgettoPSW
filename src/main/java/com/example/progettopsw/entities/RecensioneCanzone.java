@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
-@Table(name = "recensione_canzone", schema = "orders")
+@Table(name = "recensione_canzone", schema = "PSWDB")
 @Getter
 @Setter @NoArgsConstructor @AllArgsConstructor @ToString @EqualsAndHashCode(of = "id")
 public class RecensioneCanzone {
@@ -24,7 +25,7 @@ public class RecensioneCanzone {
     private Canzone canzone;
 
     @Column(name = "data_recensione")
-    private LocalDate dataRecensione;
+    private Date dataRecensione;
 
     @Column(name = "voto", nullable = false)
     private Double voto;

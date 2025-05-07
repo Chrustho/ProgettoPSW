@@ -13,6 +13,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User getUserById(Long id);
 
+    List<User> findByNomeIgnoreCaseOrCognomeIgnoreCase(String nome, String cognome);
+
+    Boolean existsByEmail(String email);
+
     /**
      * Utenti con almeno N recensioni di canzoni.
      */

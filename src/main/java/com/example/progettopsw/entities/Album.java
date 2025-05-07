@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "album", schema = "orders")
+@Table(name = "album", schema = "PSWDB")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -40,6 +40,14 @@ public class Album {
             inverseJoinColumns = @JoinColumn(name = "genere_id")
     )
     private Set<Genere> generi = new HashSet<>();
+
+    @Basic
+    @Column(name = "prezzo")
+    private Float prezzo;
+
+    @Basic
+    @Column(name = "quantity")
+    private Integer quantity;
 
     @ManyToMany(mappedBy = "albumDaAscoltare")
     private Set<User> utentiDaAscoltare = new HashSet<>();

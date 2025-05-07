@@ -12,7 +12,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "prodotto_in_carrello", schema = "orders")
+@Table(name = "prodotto_in_carrello", schema = "PSWDB")
 public class ProdottoInCarrello {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +26,10 @@ public class ProdottoInCarrello {
     private Acquisto acquisto;
 
     @Basic
-    @Column(name = "quantity", nullable = true)
+    @Column(name = "quantity", nullable = false)
     private int quantity;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "product")
+    @JoinColumn(name = "album")
     private Album album;
 }

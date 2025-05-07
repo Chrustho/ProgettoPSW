@@ -9,7 +9,7 @@ import java.util.*;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
-@Table(name = "artista", schema = "orders")
+@Table(name = "artista", schema = "PSWDB")
 @Inheritance(strategy = InheritanceType.JOINED)
 @ToString
 public abstract class Artista {
