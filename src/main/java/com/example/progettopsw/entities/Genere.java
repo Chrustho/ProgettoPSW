@@ -1,5 +1,6 @@
 package com.example.progettopsw.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,8 +25,10 @@ public class Genere {
     private String nome;
 
     @ManyToMany(mappedBy = "generi")
+    @JsonIgnore
     private Set<Artista> artisti = new HashSet<>();
 
     @ManyToMany(mappedBy = "generi")
+    @JsonIgnore
     private Set<Album> albums = new HashSet<>();
 }

@@ -17,10 +17,10 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(of = "id")
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "nome", nullable = false)
@@ -57,12 +57,15 @@ public class User {
     private Set<Artista> artistiSeguiti = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<RecensioneAlbum> recensioniAlbum = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<RecensioneCanzone> recensioniCanzoni = new HashSet<>();
 
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.MERGE)
+    @JsonIgnore
     private List<Acquisto> acquisti;
 
 }

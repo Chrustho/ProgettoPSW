@@ -46,10 +46,10 @@ public class AlbumController {
     }
 
     @GetMapping("/most_voted")
-    public ResponseEntity getMostVotedAlbums(@RequestParam(required = false) double votoMin) {
+    public ResponseEntity getMostVotedAlbums(@RequestParam(required = true) Double votomin) {
         List<Album> albums;
-        if (votoMin > 0) {
-            albums = albumService.albumConVotoMedioPiuAltoDi(votoMin);
+        if ( !(votomin==null) && votomin > 0 ) {
+            albums = albumService.albumConVotoMedioPiuAltoDi(votomin);
         } else {
             albums = albumService.albumConVotoMedioPiuAltoDi(4.0);
         }
@@ -85,19 +85,19 @@ public class AlbumController {
         return new ResponseEntity<>(albums, HttpStatus.OK);
     }
 
-    @GetMapping("/most_voted_by_genre")
-    public ResponseEntity getMiglioriAlbumDiUnGenere(@RequestParam String genere, @RequestParam(required = false) double soglia){
+    @GetMapping("/most_voted/by_genre")
+    public ResponseEntity getMiglioriAlbumDiUnGenere(@RequestParam String genere, @RequestParam(required = false) Double soglia){
         if (genere.isBlank()){
-            new ResponseEntity<>(new ResponseMessage("Genere non specificato!"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseMessage("Genere non specificato!"), HttpStatus.BAD_REQUEST);
         }
         List<Album> albums;
-        if (soglia>0){
+        if (!(soglia==null) && soglia>0){
             albums=albumService.trovaMiglioriAlbumDiUnDatoGenere(genere,soglia);
         }else{
             albums=albumService.trovaMiglioriAlbumDiUnDatoGenere(genere,4.2);
         }
         if (albums.isEmpty()){
-            new ResponseEntity<>(new ResponseMessage("Nessun Risultato"), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new ResponseMessage("Nessun Risultato"), HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(albums,HttpStatus.OK);
     }

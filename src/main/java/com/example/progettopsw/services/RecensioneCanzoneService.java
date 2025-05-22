@@ -1,7 +1,7 @@
 package com.example.progettopsw.services;
 
 import com.example.progettopsw.entities.RecensioneCanzone;
-import com.example.progettopsw.entities.User;
+import com.example.progettopsw.entities.Users;
 import com.example.progettopsw.repositories.RecensioneCanzoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class RecensioneCanzoneService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> trovaRecensoriCheSeguonoArtista(Long canzoneId){
+    public List<Users> trovaRecensoriCheSeguonoArtista(Long canzoneId){
         return recensioneCanzoneRepository.findReviewersAlsoFollowingArtist(canzoneId);
     }
 

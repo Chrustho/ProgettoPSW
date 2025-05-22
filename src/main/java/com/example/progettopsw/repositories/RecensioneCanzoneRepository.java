@@ -1,8 +1,7 @@
 package com.example.progettopsw.repositories;
 
-import com.example.progettopsw.entities.RecensioneAlbum;
 import com.example.progettopsw.entities.RecensioneCanzone;
-import com.example.progettopsw.entities.User;
+import com.example.progettopsw.entities.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,7 +34,7 @@ public interface RecensioneCanzoneRepository extends JpaRepository<RecensioneCan
       WHERE rc.canzone.id = :cid
         AND rc.user MEMBER OF rc.canzone.album.artista.follower
     """)
-    List<User> findReviewersAlsoFollowingArtist(@Param("cid") Long canzoneId);
+    List<Users> findReviewersAlsoFollowingArtist(@Param("cid") Long canzoneId);
 
     // feedback rapido: percentuale di recensioni senza testo
     @Query("""

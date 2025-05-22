@@ -59,7 +59,7 @@ public class ArtistaController {
         if (genere.isBlank()){
             return new ResponseEntity(new ResponseMessage("Inserire genere valido"), HttpStatus.BAD_REQUEST);
         }
-        List<Artista> artists= artistaService.artistiPopolariDiGenere(genere, 100000);
+        List<Artista> artists= artistaService.artistiPopolariDiGenere(genere, 0);
         if (artists.isEmpty()){
             return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
         }

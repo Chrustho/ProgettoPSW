@@ -49,6 +49,8 @@ public interface ArtistaRepository extends JpaRepository<Artista,Long> {
     """)
     List<Artista> findArtistsWithAverageAlbumRating(@Param("minAvg") double minAverage);
 
+
+
     // trova artisti di un genere con almeno N follower
     @Query("""
       SELECT a FROM Artista a

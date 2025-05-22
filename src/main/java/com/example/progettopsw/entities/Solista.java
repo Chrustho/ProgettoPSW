@@ -1,5 +1,6 @@
 package com.example.progettopsw.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,5 +22,6 @@ public class Solista extends Artista {
 
     // band di cui fa parte
     @ManyToMany(mappedBy = "membri")
+    @JsonIgnore
     private Set<Band> bands = new HashSet<>();
 }

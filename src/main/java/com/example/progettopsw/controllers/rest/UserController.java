@@ -1,6 +1,6 @@
 package com.example.progettopsw.controllers.rest;
 
-import com.example.progettopsw.entities.User;
+import com.example.progettopsw.entities.Users;
 import com.example.progettopsw.services.UserService;
 import com.example.progettopsw.support.ResponseMessage;
 import com.example.progettopsw.support.exceptions.EmailGiaRegistrataException;
@@ -19,7 +19,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity aggiungiUtente(@RequestBody @Validated User user){
+    public ResponseEntity aggiungiUtente(@RequestBody @Validated Users user){
         try {
             userService.registraUtente(user);
         }catch (EmailGiaRegistrataException e){
@@ -30,7 +30,7 @@ public class UserController {
 
     @GetMapping("/users/reviewers_leaderboard")
     public ResponseEntity recensoriPiuAttivi(){
-        List<User> users=userService.recensoriPiuAttivi(10);
+        List<Users> users=userService.recensoriPiuAttivi(10);
         if (users.isEmpty()){
             return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
         }
@@ -39,7 +39,7 @@ public class UserController {
 
     @GetMapping("/users/users_leaderboard")
     public ResponseEntity utentiPiuAttivi(){
-        List<User> users=userService.utentiPiuAttivi(10,10);
+        List<Users> users=userService.utentiPiuAttivi(10,10);
         if (users.isEmpty()){
             return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
         }
@@ -51,7 +51,7 @@ public class UserController {
         if (nome.isBlank() && cognome.isBlank()){
             return new ResponseEntity<>(new ResponseMessage("Inserisci nome o cognome da ricercare!"), HttpStatus.BAD_REQUEST);
         }
-        List<User> users=userService.trovaPerNomeOCognome(nome, cognome);
+        List<Users> users=userService.trovaPerNomeOCognome(nome, cognome);
         if (users.isEmpty()){
             return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
         }

@@ -22,8 +22,13 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     /**
      * Album con media voto delle recensioni superiore alla soglia.
      */
-    @Query("SELECT al FROM Album al JOIN al.recensioniAlbum r " +
-            "GROUP BY al HAVING AVG(r.voto) > :soglia")
+    @Query("""
+  SELECT al
+    FROM Album al
+    LEFT JOIN al.recensioniAlbum r
+  GROUP BY al
+  HAVING COALESCE(AVG(r.voto), 0) >= :soglia
+""")
     List<Album> findTopRated(@Param("soglia") double minAverage);
 
     /**
@@ -36,7 +41,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     // album pìù aggiunti più volte nella wishlist (albumPreferiti)
     @Query("""
       SELECT al FROM Album al
-      JOIN al.utentiPreferiti u
+      LEFT JOIN al.utentiPreferiti u
       GROUP BY al
       ORDER BY COUNT(u) DESC
     """)
@@ -68,10 +73,10 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     @Query("""
     SELECT al FROM Album al
     JOIN al.generi g
-    JOIN al.recensioniAlbum r
+    LEFT JOIN al.recensioniAlbum r
     WHERE g.nome = :genere
     GROUP BY al
-    HAVING AVG(r.voto) >= :soglia
+    HAVING COALESCE(AVG(r.voto), 0) >= :soglia
     """)
     List<Album> findTopRatedAlbumsByGenres(@Param("genere") String genere, @Param("soglia") double soglia);
 

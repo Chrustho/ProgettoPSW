@@ -9,7 +9,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 @Entity
 @Table(name = "prodotto_in_carrello", schema = "PSWDB")
@@ -31,5 +30,6 @@ public class ProdottoInCarrello {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "album")
+    @JsonIgnore
     private Album album;
 }

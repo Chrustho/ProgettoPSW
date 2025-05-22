@@ -3,7 +3,7 @@ package com.example.progettopsw.services;
 import com.example.progettopsw.entities.Acquisto;
 import com.example.progettopsw.entities.Album;
 import com.example.progettopsw.entities.ProdottoInCarrello;
-import com.example.progettopsw.entities.User;
+import com.example.progettopsw.entities.Users;
 import com.example.progettopsw.repositories.AcquistoRepository;
 import com.example.progettopsw.repositories.ProdottoInCarrelloRepository;
 import com.example.progettopsw.repositories.UserRepository;
@@ -47,7 +47,7 @@ public class AcquistoService {
     }
 
     @Transactional(readOnly = true)
-    public List<Acquisto> prendiAcquistiDaUtente(User user) throws UtenteNonTrovatoException {
+    public List<Acquisto> prendiAcquistiDaUtente(Users user) throws UtenteNonTrovatoException {
         if (!userRepository.existsById(user.getId())){
             throw new UtenteNonTrovatoException();
         }

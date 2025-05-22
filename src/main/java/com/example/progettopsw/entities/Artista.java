@@ -1,8 +1,9 @@
 package com.example.progettopsw.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDate;
+
 import java.util.*;
 
 @Getter
@@ -33,9 +34,11 @@ public abstract class Artista {
 
     // album realizzati da questo artista
     @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Album> albums = new HashSet<>();
 
     // utenti che seguono questo artista
     @ManyToMany(mappedBy = "artistiSeguiti")
-    private Set<User> follower = new HashSet<>();
+    @JsonIgnore
+    private Set<Users> follower = new HashSet<>();
 }

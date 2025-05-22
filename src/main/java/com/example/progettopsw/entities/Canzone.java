@@ -1,5 +1,6 @@
 package com.example.progettopsw.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,8 +32,10 @@ public class Canzone {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "album_id", nullable = false)
+    @JsonIgnore
     private Album album;
 
     @OneToMany(mappedBy = "canzone", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<RecensioneCanzone> recensioni = new HashSet<>();
 }

@@ -1,9 +1,9 @@
 package com.example.progettopsw.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -18,10 +18,12 @@ public class RecensioneCanzone {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JsonIgnore
+    private Users user;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "canzone_id", nullable = false)
+    @JsonIgnore
     private Canzone canzone;
 
     @Column(name = "data_recensione")

@@ -2,6 +2,7 @@ package com.example.progettopsw.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,5 +18,6 @@ public class Band extends Artista {
             joinColumns = @JoinColumn(name = "band_id"),
             inverseJoinColumns = @JoinColumn(name = "solista_id")
     )
+    @JsonIgnore
     private Set<Solista> membri = new HashSet<>();
 }

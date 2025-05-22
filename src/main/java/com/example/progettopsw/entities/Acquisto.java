@@ -1,19 +1,17 @@
 package com.example.progettopsw.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 @Entity
 @Table(name = "acquisti", schema = "PSWDB")
@@ -31,7 +29,8 @@ public class Acquisto {
 
     @ManyToOne
     @JoinColumn(name = "buyer")
-    private User buyer;
+    @JsonIgnore
+    private Users buyer;
 
     @OneToMany(mappedBy = "acquisto", cascade = CascadeType.MERGE)
     private List<ProdottoInCarrello> carrello;

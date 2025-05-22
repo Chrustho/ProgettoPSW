@@ -1,7 +1,7 @@
 package com.example.progettopsw.controllers.rest;
 
 import com.example.progettopsw.entities.Acquisto;
-import com.example.progettopsw.entities.User;
+import com.example.progettopsw.entities.Users;
 import com.example.progettopsw.services.AcquistoService;
 import com.example.progettopsw.services.UserService;
 import com.example.progettopsw.support.ResponseMessage;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class AcquistoController {
     }
 
     @GetMapping("/{user}")
-    public ResponseEntity getPurchases(@RequestBody @Validated User user) throws UtenteNonTrovatoException {
+    public ResponseEntity getPurchases(@RequestBody @Validated Users user) throws UtenteNonTrovatoException {
         List<Acquisto> acquisti=acquistoService.prendiAcquistiDaUtente(user);
         return new ResponseEntity<>(acquisti,HttpStatus.OK);
     }

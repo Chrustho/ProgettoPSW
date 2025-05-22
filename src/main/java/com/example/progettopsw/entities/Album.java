@@ -1,5 +1,6 @@
 package com.example.progettopsw.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +14,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode(of = "id")
 public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,11 +50,14 @@ public class Album {
     private Integer quantity;
 
     @ManyToMany(mappedBy = "albumDaAscoltare")
-    private Set<User> utentiDaAscoltare = new HashSet<>();
+    @JsonIgnore
+    private Set<Users> utentiDaAscoltare = new HashSet<>();
 
     @ManyToMany(mappedBy = "albumPreferiti")
-    private Set<User> utentiPreferiti = new HashSet<>();
+    @JsonIgnore
+    private Set<Users> utentiPreferiti = new HashSet<>();
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<RecensioneAlbum> recensioniAlbum = new HashSet<>();
 }
