@@ -1,5 +1,6 @@
 package com.example.progettopsw.repositories;
 
+import com.example.progettopsw.entities.Album;
 import com.example.progettopsw.entities.Artista;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ArtistaRepository extends JpaRepository<Artista,Long> {
 
@@ -48,6 +50,8 @@ public interface ArtistaRepository extends JpaRepository<Artista,Long> {
       HAVING AVG(r.voto) >= :minAvg
     """)
     List<Artista> findArtistsWithAverageAlbumRating(@Param("minAvg") double minAverage);
+
+    List<Artista> findByAlbums(Set<Album> albums);
 
 
 

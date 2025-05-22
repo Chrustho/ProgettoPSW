@@ -19,7 +19,6 @@ import java.util.Set;
 
 @Service
 public class AlbumService {
-
     @Autowired
     private AlbumRepository albumRepository;
 
@@ -45,10 +44,6 @@ public class AlbumService {
         return albumRepository.findTopRated(minAverage);
     }
 
-    @Transactional(readOnly = true)
-    public List<Album> albumNonAncoraMessiInDaAscoltare(){
-        return albumRepository.findUnqueuedAlbums();
-    }
 
 
     @Transactional(readOnly = true)

@@ -1,12 +1,14 @@
 package com.example.progettopsw.repositories;
 
 import com.example.progettopsw.entities.Album;
+import com.example.progettopsw.entities.RecensioneAlbum;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AlbumRepository extends JpaRepository<Album, Long> {
 
@@ -31,11 +33,9 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 """)
     List<Album> findTopRated(@Param("soglia") double minAverage);
 
-    /**
-     * Album che nessun utente ha ancora aggiunto alla lista "da ascoltare".
-     */
-    @Query("SELECT al FROM Album al WHERE al.utentiDaAscoltare IS EMPTY")
-    List<Album> findUnqueuedAlbums();
+    List<Album> findByRecensioniAlbum(Set<RecensioneAlbum> recensioniAlbum);
+
+
 
 
     // album pìù aggiunti più volte nella wishlist (albumPreferiti)

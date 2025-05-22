@@ -1,7 +1,11 @@
 package com.example.progettopsw.services;
 
+import com.example.progettopsw.entities.Album;
 import com.example.progettopsw.entities.Artista;
+import com.example.progettopsw.entities.RecensioneAlbum;
+import com.example.progettopsw.repositories.AlbumRepository;
 import com.example.progettopsw.repositories.ArtistaRepository;
+import com.example.progettopsw.repositories.RecensioneAlbumRepository;
 import com.example.progettopsw.support.exceptions.ArtistaGiaPresenteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,12 +16,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ArtistaService {
     @Autowired
     private ArtistaRepository artistaRepository;
+    @Autowired
+    private RecensioneAlbumRepository recensioneAlbumRepository;
+    @Autowired
+    private AlbumRepository albumRepository;
 
     @Transactional(readOnly = true)
     public List<Artista> trovaArtisticonNome(String nome){
@@ -36,7 +46,10 @@ public class ArtistaService {
 
     @Transactional(readOnly = true)
     public List<Artista> artistiConVotoMedioSuperioreA(double minAvg){
-        return artistaRepository.findArtistsWithAverageAlbumRating(minAvg);
+        List< RecensioneAlbum> rec=recensioneAlbumRepository.findByVotoGreaterThan(minAvg);
+        Set<RecensioneAlbum> sRec= new HashSet<>(rec);
+        Set<Album> album=new HashSet<>(albumRepository.findByRecensioniAlbum(sRec));
+        return artistaRepository.findByAlbums(album);
     }
 
     @Transactional(readOnly = true)

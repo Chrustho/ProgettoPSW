@@ -1,5 +1,6 @@
 package com.example.progettopsw.repositories;
 
+import com.example.progettopsw.entities.Album;
 import com.example.progettopsw.entities.RecensioneAlbum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,6 +35,8 @@ public interface RecensioneAlbumRepository extends JpaRepository<RecensioneAlbum
       WHERE r.album.id = :albumId
     """)
     Long countTotalWordsByAlbum(@Param("albumId") Long albumId);
+
+    List<RecensioneAlbum> findByVotoGreaterThan(Double soglia);
 
     // recensioni di album con sentiment positivo (voto >=7)
     List<RecensioneAlbum> findByVotoGreaterThanEqual(double threshold);
