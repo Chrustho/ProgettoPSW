@@ -18,6 +18,7 @@ import java.util.List;
 public class ArtistaService {
     @Autowired
     private ArtistaRepository artistaRepository;
+    //prova
 
     @Transactional(readOnly = true)
     public List<Artista> trovaArtisticonNome(String nome){
