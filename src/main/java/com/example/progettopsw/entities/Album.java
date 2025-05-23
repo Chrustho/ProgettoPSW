@@ -57,7 +57,7 @@ public class Album {
     @JsonIgnore
     private Set<Users> utentiPreferiti = new HashSet<>();
 
-    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "album", fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<RecensioneAlbum> recensioniAlbum = new HashSet<>();
 }

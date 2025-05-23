@@ -44,6 +44,7 @@ public class ArtistaService {
         return artistaRepository.findMostFollowedArtists();
     }
 
+    /*
     @Transactional(readOnly = true)
     public List<Artista> artistiConVotoMedioSuperioreA(double minAvg){
         List< RecensioneAlbum> rec=recensioneAlbumRepository.findByVotoGreaterThan(minAvg);
@@ -51,6 +52,8 @@ public class ArtistaService {
         Set<Album> album=new HashSet<>(albumRepository.findByRecensioniAlbum(sRec));
         return artistaRepository.findByAlbums(album);
     }
+
+     */
 
     @Transactional(readOnly = true)
     public List<Artista> artistiPopolariDiGenere(String genere, long minFollowers){

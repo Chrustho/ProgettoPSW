@@ -21,12 +21,13 @@ public class RecensioneAlbum {
     @JsonIgnore
     private Users user;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "album_id", nullable = false)
     @JsonIgnore
     private Album album;
 
     @Column(name = "data_recensione")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataRecensione;
 
     @Column(name = "voto", nullable = false)

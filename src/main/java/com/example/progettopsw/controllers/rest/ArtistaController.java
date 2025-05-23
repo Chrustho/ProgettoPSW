@@ -40,6 +40,7 @@ public class ArtistaController {
         return new ResponseEntity(artisti,HttpStatus.OK);
     }
 
+    /*
     @GetMapping("/top_artists/by_vote")
     public ResponseEntity artistiPiuVotati(@RequestParam double minAvg){
         List<Artista> artists;
@@ -53,6 +54,8 @@ public class ArtistaController {
         }
         return new ResponseEntity(artists,HttpStatus.OK);
     }
+
+     */
 
     @GetMapping("/top_artist/by_genre")
     public ResponseEntity artistiPiuPopolariDiUnDatoGenere(@RequestParam String genere){

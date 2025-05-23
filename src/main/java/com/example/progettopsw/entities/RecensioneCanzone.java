@@ -27,6 +27,7 @@ public class RecensioneCanzone {
     private Canzone canzone;
 
     @Column(name = "data_recensione")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataRecensione;
 
     @Column(name = "voto", nullable = false)

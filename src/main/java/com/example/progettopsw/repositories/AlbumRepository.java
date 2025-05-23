@@ -1,84 +1,30 @@
 package com.example.progettopsw.repositories;
 
 import com.example.progettopsw.entities.Album;
-import com.example.progettopsw.entities.RecensioneAlbum;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 public interface AlbumRepository extends JpaRepository<Album, Long> {
+    Optional<Album> findById(Long id);
 
-    Album getAlbumById(Long id);
+    List<Album> findByArtistaNomeIgnoreCaseAndNomeIgnoreCase(String artistaNome, String nome);
 
-    /**
-     * Trova gli album di un artista specifico.
-     */
-    List<Album> findByArtistaNomeIgnoreCaseAndNome(String artistaNome, String nome);
+    boolean existsByArtistaNomeIgnoreCaseAndNomeIgnoreCase(String artistaNome, String nome);
 
-    boolean existsAlbumByArtistaNomeIgnoreCaseAndNome(String artistaNome, String nome);
-
-    /**
-     * Album con media voto delle recensioni superiore alla soglia.
-     */
-    @Query("""
-  SELECT al
-    FROM Album al
-    LEFT JOIN al.recensioniAlbum r
-  GROUP BY al
-  HAVING COALESCE(AVG(r.voto), 0) >= :soglia
-""")
-    List<Album> findTopRated(@Param("soglia") double minAverage);
-
-    List<Album> findByRecensioniAlbum(Set<RecensioneAlbum> recensioniAlbum);
+    List<Album> findByRecensioniAlbumVotoGreaterThan(Double minVoto);
 
 
+    List<Album> findByGeneriNomeIn(List<String> generi);
+
+    Long countByIdAndGeneriNomeIn(Long id, List<String> generi);
+
+    List<Album> findDistinctByGeneriNomeIn(List<String> generi);
 
 
-    // album pìù aggiunti più volte nella wishlist (albumPreferiti)
-    @Query("""
-      SELECT al FROM Album al
-      LEFT JOIN al.utentiPreferiti u
-      GROUP BY al
-      ORDER BY COUNT(u) DESC
-    """)
-    List<Album> findMostWishlistedAlbums(Pageable pageable);
+    List<Album> findByGeneriNomeAndRecensioniAlbumVotoGreaterThan(String genere, Double soglia);
 
-
-    // album con almeno un genere tra quelli posti in input
-    @Query("""
-    SELECT DISTINCT al FROM Album al
-    JOIN al.generi g
-    WHERE g.nome IN :generi
-    """)
-    List<Album> findAlbumsByAnyGenre(@Param("generi") List<String> generi);
-
-    // album con TUTTI i generi passati in input
-
-    @Query("""
-    SELECT al FROM Album al
-    JOIN al.generi g
-    WHERE g.nome IN :generi
-    GROUP BY al
-    HAVING COUNT(DISTINCT g.nome) = :size
-    """)
-    List<Album> findAlbumsByAllGenres(@Param("generi") List<String> generi, @Param("size") long size);
-
-
-    // migliori album di un dato genere
-
-    @Query("""
-    SELECT al FROM Album al
-    JOIN al.generi g
-    LEFT JOIN al.recensioniAlbum r
-    WHERE g.nome = :genere
-    GROUP BY al
-    HAVING COALESCE(AVG(r.voto), 0) >= :soglia
-    """)
-    List<Album> findTopRatedAlbumsByGenres(@Param("genere") String genere, @Param("soglia") double soglia);
-
-
+    List<Album> findByAnnoRilascioBetweenOrderByAnnoRilascioDesc(Integer startYear, Integer endYear);
 }

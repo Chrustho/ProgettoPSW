@@ -13,92 +13,107 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/albums")
+@Validated
 public class AlbumController {
     @Autowired
     private AlbumService albumService;
 
     @PostMapping
-    public ResponseEntity createAlbum(@RequestBody @Validated Album album){
+    public ResponseEntity<ResponseMessage> createAlbum(@RequestBody @Validated Album album) {
         try {
-            albumService.aggiungiAlbum(album);
-        }catch (AlbumGiaPresenteException e){
-            return new ResponseEntity(new ResponseMessage("Album già presente in catalogo"), HttpStatus.BAD_REQUEST);
+            Album savedAlbum = albumService.aggiungiAlbum(album);
+            return ResponseEntity.ok(new ResponseMessage("Album aggiunto correttamente!"));
+        } catch (AlbumGiaPresenteException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Album già presente in catalogo"));
         }
-        return new ResponseEntity(new ResponseMessage("Album aggiiunto correttamente!"), HttpStatus.OK);
     }
 
     @GetMapping("/paged")
-    public ResponseEntity getAll(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize, @RequestParam(value = "sortBy", defaultValue = "id") String sortBy) {
+    public ResponseEntity<?> getAll(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy) {
+
         List<Album> albums = albumService.mostraTuttiGliAlbum(pageNumber, pageSize, sortBy);
-        if (albums.isEmpty()) {
-            return new ResponseEntity<>(new ResponseMessage("Nessun Risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(albums, HttpStatus.OK);
+        return albums.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(albums);
     }
 
     @GetMapping("/search/by_artist_and_name")
-    public ResponseEntity getByNomeAndArtista(@RequestParam(required = true) String artista, @RequestParam(required = true) String nome) {
+    public ResponseEntity<?> getByNomeAndArtista(
+            @RequestParam(required = true) String artista,
+            @RequestParam(required = true) String nome) {
+        if (artista.isBlank() || nome.isBlank()){
+            return ResponseEntity.badRequest().build();
+        }
         List<Album> albums = albumService.trovaAlbumTramiteArtistaENome(artista, nome);
-        if (albums.isEmpty()) {
-            return new ResponseEntity<>(new ResponseMessage("Nessun risultato trovato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(albums, HttpStatus.OK);
+        return albums.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(albums);
     }
 
-    @GetMapping("/most_voted")
-    public ResponseEntity getMostVotedAlbums(@RequestParam(required = true) Double votomin) {
-        List<Album> albums;
-        if ( !(votomin==null) && votomin > 0 ) {
-            albums = albumService.albumConVotoMedioPiuAltoDi(votomin);
-        } else {
-            albums = albumService.albumConVotoMedioPiuAltoDi(4.0);
-        }
-        if (albums.isEmpty()) {
-            return new ResponseEntity(new ResponseMessage("Nessun Risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(albums, HttpStatus.OK);
+    @GetMapping("/most_voted/by_avg")
+    public ResponseEntity<?> getMostVotedAlbums(
+            @RequestParam Double votomin) {
+
+        double threshold = (votomin != null && votomin > 0) ? votomin : 4.0;
+        List<Album> albums = albumService.albumConVotoMedioPiuAltoDi(threshold);
+        return albums.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(albums);
     }
 
+    /*
     @GetMapping("/most_wishlisted")
-    public ResponseEntity getMostWishlisted(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize, @RequestParam(value = "sortBy", defaultValue = "id") String sortBy) {
-        List<Album> albums= albumService.mostraAlbumPiuDesiderati(pageNumber,pageSize,sortBy);
-        if (albums.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(albums, HttpStatus.OK);
+    public ResponseEntity<?> getMostWishlisted(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy) {
+
+        List<Album> albums = albumService.mostraAlbumPiuDesiderati(pageNumber, pageSize, sortBy);
+        return albums.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(albums);
     }
+
+     */
 
     @GetMapping("/search/by_generi")
-    public ResponseEntity getByGenere(@RequestParam List<String> generi, @RequestParam boolean tutti){
-        if (generi.isEmpty()){
-            return new ResponseEntity<>(new ResponseMessage("Parametri in input incorretti!"), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> getByGenere(
+            @RequestParam List<String> generi,
+            @RequestParam boolean tutti) {
+
+        if (generi.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Parametri in input incorretti!"));
         }
-        List<Album> albums;
-        if (tutti){
-            albums=albumService.trovaAlbumConTuttiIGeneriSpecificati(generi);
-        }else {
-            albums=albumService.trovaAlbumConAlmenoUnGenereSpecificato(generi);
-        }
-        if (albums.isEmpty()){
-            return new ResponseEntity<>(new ResponseMessage("Nessun Risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(albums, HttpStatus.OK);
+
+        List<Album> albums = tutti
+                ? albumService.trovaAlbumConTuttiIGeneriSpecificati(generi)
+                : albumService.trovaAlbumConAlmenoUnGenereSpecificato(generi);
+
+        return albums.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(albums);
     }
 
     @GetMapping("/most_voted/by_genre")
-    public ResponseEntity getMiglioriAlbumDiUnGenere(@RequestParam String genere, @RequestParam(required = false) Double soglia){
-        if (genere.isBlank()){
-            return new ResponseEntity<>(new ResponseMessage("Genere non specificato!"), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> getMiglioriAlbumDiUnGenere(
+            @RequestParam String genere,
+            @RequestParam(required = false) Double soglia) {
+
+        if (genere.isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Genere non specificato!"));
         }
-        List<Album> albums;
-        if (!(soglia==null) && soglia>0){
-            albums=albumService.trovaMiglioriAlbumDiUnDatoGenere(genere,soglia);
-        }else{
-            albums=albumService.trovaMiglioriAlbumDiUnDatoGenere(genere,4.2);
-        }
-        if (albums.isEmpty()){
-            return new ResponseEntity<>(new ResponseMessage("Nessun Risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(albums,HttpStatus.OK);
+
+        double threshold = (soglia != null && soglia > 0) ? soglia : 4.2;
+        List<Album> albums = albumService.trovaMiglioriAlbumDiUnDatoGenere(genere, threshold);
+
+        return albums.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(albums);
     }
 }

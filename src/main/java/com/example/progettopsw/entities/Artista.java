@@ -37,6 +37,7 @@ public abstract class Artista {
     @JsonIgnore
     private Set<Album> albums = new HashSet<>();
 
+
     // utenti che seguono questo artista
     @ManyToMany(mappedBy = "artistiSeguiti")
     @JsonIgnore
