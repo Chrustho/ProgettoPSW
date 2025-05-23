@@ -1,7 +1,7 @@
 package com.example.progettopsw.support;
 
 public class ResponseMessage {
-    private String message;
+    private final String message;
 
 
     public ResponseMessage(String message) {
