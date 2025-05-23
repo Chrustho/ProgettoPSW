@@ -65,20 +65,8 @@ public class AlbumController {
                 : ResponseEntity.ok(albums);
     }
 
-    /*
-    @GetMapping("/most_wishlisted")
-    public ResponseEntity<?> getMostWishlisted(
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(defaultValue = "id") String sortBy) {
 
-        List<Album> albums = albumService.mostraAlbumPiuDesiderati(pageNumber, pageSize, sortBy);
-        return albums.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(albums);
-    }
 
-     */
 
     @GetMapping("/search/by_generi")
     public ResponseEntity<?> getByGenere(
