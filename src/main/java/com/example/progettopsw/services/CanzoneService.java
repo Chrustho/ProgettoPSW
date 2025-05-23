@@ -20,17 +20,16 @@ public class CanzoneService {
     @Autowired
     private CanzoneRepository canzoneRepository;
 
-    @Transactional(readOnly = false)
-    public void aggiungiCanzone(Canzone canzone) {
-        if (canzone.getNome() != null && canzone.getAlbum() != null) {
-            if (canzoneRepository.existsByNomeEqualsIgnoreCaseAndAlbum_Nome(canzone.getNome(), canzone.getAlbum().getNome())) {
-                throw new CanzoneGiaPresenteException("Canzone già presente!");
-            } else {
-                canzoneRepository.save(canzone);
-            }
+    public Canzone aggiungiCanzone(Canzone canzone) {
+        if (canzone.getNome() == null || canzone.getAlbum() == null) {
+            throw new IllegalArgumentException("Nome canzone e album sono obbligatori");
         }
+        if (canzoneRepository.existsByNomeIgnoreCaseAndAlbumNomeIgnoreCase(
+                canzone.getNome(), canzone.getAlbum().getNome())) {
+            throw new CanzoneGiaPresenteException("Canzone già presente!");
+        }
+        return canzoneRepository.save(canzone);
     }
-
 
     @Transactional(readOnly = true)
     public List<Canzone> trovaCanzoniPiuLunghe() {
@@ -38,55 +37,42 @@ public class CanzoneService {
     }
 
     @Transactional(readOnly = true)
-    public List<Canzone> trovaCanzoneConXNelNome(String nomeParziale) {
+    public List<Canzone> trovaCanzoniPiuCorte() {
+        return canzoneRepository.findTop5ByOrderByDurataAsc();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Canzone> trovaCanzonePerNome(String nomeParziale) {
         return canzoneRepository.findByNomeContainingIgnoreCase(nomeParziale);
     }
 
     @Transactional(readOnly = true)
     public List<Canzone> trovaCanzoniConVotoMaggioreDi(double soglia) {
-        return canzoneRepository.findTopRatedSongs(soglia);
+        return canzoneRepository.findByAverageRatingGreaterThan(soglia);
     }
 
     @Transactional(readOnly = true)
-    public List<Canzone> trovaAlbumConAlmenoUnGenereSpecificato(List<String> generi){
-        return canzoneRepository.findByAnyAlbumGenre(generi);
+    public List<Canzone> trovaCanzoniPerGeneri(List<String> generi, boolean tutti) {
+        return tutti
+                ? canzoneRepository.findByAllAlbumGenres(generi, (long) generi.size())
+                : canzoneRepository.findByAlbumGenres(generi);
     }
 
     @Transactional(readOnly = true)
-    public List<Canzone> trovaAlbumConTuttiIGeneriSpecificati(List<String> generi){
-        return canzoneRepository.findByAllAlbumGenres(generi,generi.size());
+    public List<Canzone> trovaCanzoniPiuRecensite(long minRecensioni) {
+        return canzoneRepository.findByMinReviewCount(minRecensioni);
     }
 
     @Transactional(readOnly = true)
-    public List<Canzone> canzoniPiuRecensite(long minReviews){
-        return canzoneRepository.findPopularSongsByReviewCount(minReviews);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Canzone> trovaPerTitoloOArtista(String keyword){
-        return canzoneRepository.searchByTitleOrArtist(keyword);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Canzone> trovaCanzoniPiuCorte(){
-        return canzoneRepository.findTop5ByOrderByDurataAsc();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Canzone> top10CanzoniPiuAscoltate(){
+    public List<Canzone> top10CanzoniPiuAscoltate() {
         return canzoneRepository.findTop10ByOrderByNumeroAscoltiDesc();
     }
 
     @Transactional(readOnly = true)
-    public List<Canzone> trovaNCanzoniPiuAscoltatiDiArtista(Long artistaId, int pageNumber, int pageSize, String sortBy){
-        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page<Canzone> pagedResult = canzoneRepository.findTopByArtistOrderByNumeroAscoltiDesc(artistaId, paging);
-        if (pagedResult.hasContent() ) {
-            return pagedResult.getContent();
-        }
-        else {
-            return new ArrayList<>();
-        }
+    public List<Canzone> trovaCanzoniDiArtista(Long artistaId, int pageNumber, int pageSize, String sortBy) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+        Page<Canzone> result = canzoneRepository.findByArtistIdOrderByStreamsDesc(artistaId, pageable);
+        return result.getContent();
     }
 
 

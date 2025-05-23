@@ -8,36 +8,53 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface RecensioneAlbumRepository extends JpaRepository<RecensioneAlbum, Long> {
 
-    RecensioneAlbum getRecensioneAlbumById(Long id);
+    Optional<RecensioneAlbum> findById(Long id);
 
-    /**
-     * Recensioni di album fatte dopo la data specificata.
-     */
     List<RecensioneAlbum> findByDataRecensioneAfter(LocalDate date);
 
-    /**
-     * Recensioni con voto tra min e max.
-     */
     List<RecensioneAlbum> findByVotoBetween(double min, double max);
 
-    /**
-     * Recensioni per un dato album, ordinate per data decrescente.
-     */
+    List<RecensioneAlbum> findByVotoGreaterThanEqual(double minVoto);
+
     List<RecensioneAlbum> findByAlbumIdOrderByDataRecensioneDesc(Long albumId);
 
-    // conteggia parole totali in tutte le recensioni di un album
+    // Nuove query utili
+    @Query("SELECT r FROM RecensioneAlbum r WHERE r.album.id = :albumId AND " +
+            "LENGTH(r.testo) >= :minLength")
+    List<RecensioneAlbum> findDetailedReviewsByAlbum(
+            @Param("albumId") Long albumId,
+            @Param("minLength") Integer minLength);
+
+    @Query("SELECT r FROM RecensioneAlbum r WHERE r.user.id = :userId " +
+            "ORDER BY r.dataRecensione DESC")
+    List<RecensioneAlbum> findUserReviewsOrderByDate(@Param("userId") Long userId);
+
+    @Query("SELECT AVG(r.voto) FROM RecensioneAlbum r WHERE r.album.id = :albumId")
+    Optional<Double> calculateAlbumAverageRating(@Param("albumId") Long albumId);
+
+    @Query("SELECT COUNT(r) FROM RecensioneAlbum r WHERE r.album.id = :albumId")
+    Long countReviewsByAlbum(@Param("albumId") Long albumId);
+
+    @Query("SELECT r FROM RecensioneAlbum r WHERE r.album.artista.id = :artistaId " +
+            "ORDER BY r.dataRecensione DESC")
+    List<RecensioneAlbum> findByArtistaOrderByDate(@Param("artistaId") Long artistaId);
+
+    @Query("SELECT r FROM RecensioneAlbum r WHERE " +
+            "LOWER(r.testo) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<RecensioneAlbum> findByKeywordInText(@Param("keyword") String keyword);
+
+    @Query("SELECT COUNT(DISTINCT r.user.id) FROM RecensioneAlbum r " +
+            "WHERE r.album.id = :albumId")
+    Long countUniqueReviewersByAlbum(@Param("albumId") Long albumId);
+
     @Query("""
       SELECT SUM(LENGTH(r.testo) - LENGTH(REPLACE(r.testo, ' ', '')) + 1)
-      FROM RecensioneAlbum r
-      WHERE r.album.id = :albumId
+      FROM RecensioneAlbum r WHERE r.album.id = :albumId
     """)
     Long countTotalWordsByAlbum(@Param("albumId") Long albumId);
 
-    List<RecensioneAlbum> findByVotoGreaterThan(Double soglia);
-
-    // recensioni di album con sentiment positivo (voto >=7)
-    List<RecensioneAlbum> findByVotoGreaterThanEqual(double threshold);
 }

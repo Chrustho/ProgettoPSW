@@ -18,92 +18,94 @@ public class ArtistaController {
     @Autowired
     private ArtistaService artistaService;
 
-    @GetMapping("/search/by_nome")
-    public ResponseEntity trovaArtistaByNome(@RequestParam String nome){
-        if (nome.isBlank()){
-            return new ResponseEntity(new ResponseMessage("Nome incorretto!"), HttpStatus.BAD_REQUEST);
+    @PostMapping
+    public ResponseEntity<ResponseMessage> creaArtista(@RequestBody @Validated Artista artista) {
+        try {
+            Artista savedArtista = artistaService.aggiungiArtista(artista);
+            return ResponseEntity.ok(new ResponseMessage("Artista aggiunto correttamente"));
+        } catch (ArtistaGiaPresenteException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Artista già presente in catalogo"));
         }
-        List<Artista> artista;
-        artista=artistaService.trovaArtisticonNome(nome);
-        if (artista.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun Risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(artista, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/by_name")
+    public ResponseEntity<?> cercaPerNome(@RequestParam String nome) {
+        if (nome.isBlank()) return ResponseEntity.badRequest().build();
+        List<Artista> artisti = artistaService.trovaArtistiConNome(nome);
+        return artisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(artisti);
+    }
+
+    @GetMapping("/search/by_release_years")
+    public ResponseEntity<?> cercaPerAnniRilascio(
+            @RequestParam int fromYear,
+            @RequestParam int toYear) {
+        List<Artista> artisti = artistaService.artistiCheHannoRilasciatoTra(fromYear, toYear);
+        return artisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(artisti);
     }
 
     @GetMapping("/most_popular")
-    public ResponseEntity artistiPiuPopolari(){
-        List<Object[]> artisti=artistaService.artistiPiuPopolari();
-        if (artisti.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(artisti,HttpStatus.OK);
+    public ResponseEntity<?> artistiPiuPopolari(
+            @RequestParam(defaultValue = "0") Long minFollowers) {
+        List<Artista> artisti = artistaService.artistiPiuPopolari(minFollowers);
+        return artisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(artisti);
     }
 
-    /*
-    @GetMapping("/top_artists/by_vote")
-    public ResponseEntity artistiPiuVotati(@RequestParam double minAvg){
-        List<Artista> artists;
-        if (minAvg>0){
-            artists=artistaService.artistiConVotoMedioSuperioreA(minAvg);
-        }else {
-            artists=artistaService.artistiConVotoMedioSuperioreA(4.2);
-        }
-        if (artists.isEmpty()){
-            return new ResponseEntity<>(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(artists,HttpStatus.OK);
+    @GetMapping("/popular/by_genre")
+    public ResponseEntity<?> artistiPopolariPerGenere(
+            @RequestParam String genere,
+            @RequestParam(defaultValue = "0") Long minFollowers) {
+        if (genere.isBlank()) return ResponseEntity.badRequest().build();
+        List<Artista> artisti = artistaService.artistiPopolariDiGenere(genere, minFollowers);
+        return artisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(artisti);
     }
 
-     */
-
-    @GetMapping("/top_artist/by_genre")
-    public ResponseEntity artistiPiuPopolariDiUnDatoGenere(@RequestParam String genere){
-        if (genere.isBlank()){
-            return new ResponseEntity(new ResponseMessage("Inserire genere valido"), HttpStatus.BAD_REQUEST);
-        }
-        List<Artista> artists= artistaService.artistiPopolariDiGenere(genere, 0);
-        if (artists.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(artists,HttpStatus.OK);
+    @GetMapping("/most_streamed")
+    public ResponseEntity<?> artistiPiuAscoltati(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        List<Artista> artisti = artistaService.artistiPiuAscoltati(pageNumber, pageSize, sortBy);
+        return artisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(artisti);
     }
 
-    @GetMapping("/search/by_generi")
-    public ResponseEntity trovaArtistaByGeneri(@RequestParam List<String> generi, boolean tutti){
-        if (generi.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Inserire generi!"), HttpStatus.BAD_REQUEST);
+    @GetMapping("/search/by_genres")
+    public ResponseEntity<?> cercaPerGeneri(
+            @RequestParam List<String> generi,
+            @RequestParam boolean tutti) {
+        if (generi.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Specificare almeno un genere"));
         }
-        List<Artista> artists;
-        if (tutti){
-            artists=artistaService.trovaArtistiConTuttiIGeneri(generi,generi.size());
-        }else {
-            artists=artistaService.trovaArtistiConAlmenoUnGenere(generi);
-        }
-        if (artists.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(artists,HttpStatus.OK);
+
+        List<Artista> artisti = tutti
+                ? artistaService.trovaArtistiConTuttiIGeneri(generi)
+                : artistaService.trovaArtistiConAlmenoUnGenere(generi);
+
+        return artisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(artisti);
     }
 
-    @GetMapping("/most_recent_releases")
-    public ResponseEntity artistiConReleaseRecenti(@RequestParam int years){
-        List<Artista> artists=artistaService.artistiConReleaseRecenti(years);
-        if (artists.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun Risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(artists,HttpStatus.OK);
+    @GetMapping("/recent_releases")
+    public ResponseEntity<?> artistiConReleaseRecenti(
+            @RequestParam(defaultValue = "2") int years) {
+        List<Artista> artisti = artistaService.artistiConReleaseRecenti(years);
+        return artisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(artisti);
     }
 
-    @PostMapping
-    public ResponseEntity creaArtista(@RequestBody @Validated Artista artista){
-        try {
-            artistaService.aggiungiArtista(artista);
-        }catch (ArtistaGiaPresenteException e){
-            return new ResponseEntity<>(new ResponseMessage("Artista già presente in catalogo"), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity(new ResponseMessage("Artista aggiunto correttamente"), HttpStatus.OK);
-    }
 
 
 }

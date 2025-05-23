@@ -19,91 +19,78 @@ public class SolistaController {
     private SolistaService solistaService;
 
     @PostMapping
-    public ResponseEntity aggiungiSolista(@RequestBody @Validated Solista solista){
-        if (solista.getNome()!=null && solista.getStrumento()!=null){
-            return new ResponseEntity<>(new ResponseMessage("Paramentri di input incorretti!"), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<ResponseMessage> aggiungiSolista(@RequestBody @Validated Solista solista) {
         try {
-            solistaService.aggiungiSolista(solista);
-        }catch (SolistaGiaPresenteException e){
-            return new ResponseEntity(new ResponseMessage("Solista già presente in catalogo"), HttpStatus.BAD_REQUEST);
+            Solista saved = solistaService.aggiungiSolista(solista);
+            return ResponseEntity.ok(new ResponseMessage("Solista aggiunto correttamente"));
+        } catch (SolistaGiaPresenteException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Solista già presente in catalogo"));
         }
-        return new ResponseEntity(new ResponseMessage("Solista aggiunto correttamente"), HttpStatus.OK);
     }
 
     @GetMapping("/search/by_instrument")
-    public ResponseEntity trovaSolistaCheSuonano(@RequestParam String strumento){
-        if (strumento.isBlank()){
-            return new ResponseEntity(new ResponseMessage("Inserisci strumento"), HttpStatus.BAD_REQUEST);
-        }
-        List<Solista> solisti=solistaService.trovaSolistiCheSuonano(strumento);
-        if (solisti.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(solisti,HttpStatus.OK);
+    public ResponseEntity<?> trovaSolistiPerStrumento(
+            @RequestParam String strumento) {
+        if (strumento.isBlank()) return ResponseEntity.badRequest().build();
+        List<Solista> solisti = solistaService.trovaSolistiPerStrumento(strumento);
+        return solisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(solisti);
     }
 
     @GetMapping("/most_listened")
-    public ResponseEntity trovaSolistiPiuAscoltati(){
-        List<Solista> solisti=solistaService.trovaSolistaConPiuDiNStream(100000);
-        if (solisti.isEmpty()){
-            return new ResponseEntity<>(new ResponseMessage("Nessun risultato"), HttpStatus.OK);
-        }
-        return new ResponseEntity(solisti,HttpStatus.OK);
+    public ResponseEntity<?> trovaSolistiPiuAscoltati(
+            @RequestParam(defaultValue = "10") long minStreams) {
+        List<Solista> solisti = solistaService.trovaSolistiPiuAscoltati(minStreams);
+        return solisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(solisti);
     }
 
     @GetMapping("/search/by_name")
-    public ResponseEntity cercaPerNome(@RequestParam String nome){
-        if (nome.isBlank()){
-            return new ResponseEntity<>(new ResponseMessage("Inserisci un nome!"), HttpStatus.BAD_REQUEST);
-        }
-        List<Solista> solisti=solistaService.cercaPerNome(nome);
-        if (solisti.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(solisti,HttpStatus.OK);
+    public ResponseEntity<?> cercaPerNome(
+            @RequestParam String nome) {
+        if (nome.isBlank()) return ResponseEntity.badRequest().build();
+        List<Solista> solisti = solistaService.cercaPerNome(nome);
+        return solisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(solisti);
     }
 
-    @GetMapping("/search/by_genre")
-    public ResponseEntity cercaPerStrumento(@RequestParam List<String> generi, @RequestParam boolean tutti){
-        if (generi.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Inserisci generi!"),HttpStatus.BAD_REQUEST);
+    @GetMapping("/search/by_genres")
+    public ResponseEntity<?> cercaPerGeneri(
+            @RequestParam List<String> generi,
+            @RequestParam(defaultValue = "false") boolean tutti) {
+        if (generi.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Specificare almeno un genere"));
         }
-        List<Solista> solisti;
-        if (tutti){
-            solisti=solistaService.trovaSolistaConTuttiIGeneri(generi);
-        }else {
-            solisti=solistaService.trovaSolistaConAlmenoUnGenereSpecificato(generi);
-        }
-        if (solisti.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(solisti,HttpStatus.OK);
+        List<Solista> solisti = solistaService.trovaSolistiPerGeneri(generi, tutti);
+        return solisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(solisti);
     }
 
     @GetMapping("/search/by_avg_vote")
-    public ResponseEntity trovaSolistaConVotiMaggioriDi(@RequestParam double minAvg){
-        List<Solista> solisti;
-        if (minAvg>0){
-            solisti=solistaService.trovaSolistaConVotiMAggioriDi(minAvg);
-        }else{
-            solisti=solistaService.trovaSolistaConVotiMAggioriDi(4.2);
-        }
-        if (solisti.isEmpty()){
-            return new ResponseEntity<>(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(solisti,HttpStatus.OK);
+    public ResponseEntity<?> trovaSolistiPerMediaVoti(
+            @RequestParam(defaultValue = "4.2") double minAvg) {
+        List<Solista> solisti = solistaService.trovaSolistiPerMediaVoti(minAvg);
+        return solisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(solisti);
     }
 
     @GetMapping("/most_followed")
-    public ResponseEntity topSolistiPerNumeroDiFollower(@RequestParam int pageNumber,@RequestParam int pageSize, @RequestParam String sortBy){
-        List<Solista> solisti=solistaService.topSolistiPerNumeroDiFollower(pageNumber, pageSize, sortBy);
-        if (solisti.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(solisti,HttpStatus.OK);
+    public ResponseEntity<?> trovaSolistiPiuSeguiti(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        List<Solista> solisti = solistaService.trovaSolistiPiuSeguiti(pageNumber, pageSize, sortBy);
+        return solisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(solisti);
     }
-
 
 
 }

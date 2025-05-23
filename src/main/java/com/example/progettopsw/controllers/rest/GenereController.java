@@ -19,76 +19,71 @@ public class GenereController {
     private GenereService genereService;
 
     @PostMapping
-    public ResponseEntity createGenere(@RequestBody @Validated Genere genere){
+    public ResponseEntity<ResponseMessage> createGenere(@RequestBody @Validated Genere genere) {
         try {
-            genereService.aggiungiGenere(genere);
-        }catch (GenereGiaEsistenteException e){
-            return new ResponseEntity(new ResponseMessage("Genere già presente!"), HttpStatus.BAD_REQUEST);
+            Genere saved = genereService.aggiungiGenere(genere);
+            return ResponseEntity.ok(new ResponseMessage("Genere aggiunto correttamente"));
+        } catch (GenereGiaEsistenteException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Genere già presente!"));
         }
-        return new ResponseEntity(new ResponseMessage("Genere aggiunto correttamente"), HttpStatus.OK);
     }
 
     @GetMapping("/search/by_prefix")
-    public ResponseEntity trovaGeneriCheInizianoPer(String prefisso){
-        if (prefisso.isBlank()){
-            return new ResponseEntity(new ResponseMessage("Inserire prefisso"),HttpStatus.BAD_REQUEST);
-        }
-        List<Genere> genres=genereService.trovaGeneriCheInizianoPer(prefisso);
-        if (genres.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(genres,HttpStatus.OK);
+    public ResponseEntity<?> trovaGeneriCheInizianoPer(
+            @RequestParam  String prefisso) {
+        if (prefisso.isBlank()) return ResponseEntity.badRequest().build();
+        List<Genere> genres = genereService.trovaGeneriCheInizianoPer(prefisso);
+        return genres.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(genres);
     }
 
     @GetMapping("/most_popular")
-    public ResponseEntity trovaGeneriPiuPopolari(){
-        List<Genere> genres=genereService.trovaGeneriPopolari(15);
-        if (genres.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"),HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(genres,HttpStatus.OK);
+    public ResponseEntity<?> trovaGeneriPiuPopolari(
+            @RequestParam(defaultValue = "15") long minAlbums) {
+        List<Genere> genres = genereService.trovaGeneriPopolari(minAlbums);
+        return genres.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(genres);
     }
 
     @GetMapping("/most_listened")
-    public ResponseEntity trovaGeneriPiuAscoltati(){
-        List<Genere> genres=genereService.trovaGeneriPiuAscoltati(10000);
-        if (genres.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(genres,HttpStatus.OK);
+    public ResponseEntity<?> trovaGeneriPiuAscoltati(
+            @RequestParam(defaultValue = "1") long minStreams) {
+        List<Genere> genres = genereService.trovaGeneriPiuAscoltati(minStreams);
+        return genres.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(genres);
     }
 
     @GetMapping("/search/by_avg_vote")
-    public ResponseEntity trovaGeneriMeglioRecensiti(double minAvg){
-        List<Genere> genres;
-        if (minAvg>0){
-            genres=genereService.trovaGeneriMeglioRecensiti(minAvg);
-        }else {
-            genres=genereService.trovaGeneriMeglioRecensiti(4.2);
-        }
-        if (genres.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"),HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(genres,HttpStatus.OK);
+    public ResponseEntity<?> trovaGeneriMeglioRecensiti(
+            @RequestParam(defaultValue = "4.2") double minAvg) {
+        List<Genere> genres = genereService.trovaGeneriMeglioRecensiti(minAvg);
+        return genres.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(genres);
     }
 
     @GetMapping("/most_followed")
-    public ResponseEntity trovaGeneriPiuSeguiti(){
-        List<Genere> genres=genereService.trovaGeneriPiuSeguiti(10000);
-        if (genres.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"),HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(genres,HttpStatus.OK);
+    public ResponseEntity<?> trovaGeneriPiuSeguiti(
+            @RequestParam(defaultValue = "10000") long minFollowers) {
+        List<Genere> genres = genereService.trovaGeneriPiuSeguiti(minFollowers);
+        return genres.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(genres);
     }
 
     @GetMapping("/most_played")
-    public ResponseEntity trovaGeneriPiuSuonati(){
-        List<Genere> genres=genereService.trovaGeneriPiuSuonati(15);
-        if (genres.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"),HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(genres,HttpStatus.OK);
+    public ResponseEntity<?> trovaGeneriPiuSuonati(
+            @RequestParam(defaultValue = "15") long minArtists) {
+        List<Genere> genres = genereService.trovaGeneriPiuSuonati(minArtists);
+        return genres.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(genres);
     }
+
 
 
 

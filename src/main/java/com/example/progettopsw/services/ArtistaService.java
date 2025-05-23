@@ -15,86 +15,74 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ArtistaService {
     @Autowired
     private ArtistaRepository artistaRepository;
-    @Autowired
-    private RecensioneAlbumRepository recensioneAlbumRepository;
-    @Autowired
-    private AlbumRepository albumRepository;
 
     @Transactional(readOnly = true)
-    public List<Artista> trovaArtisticonNome(String nome){
+    public List<Artista> trovaArtistiConNome(String nome) {
         return artistaRepository.findByNomeContainingIgnoreCase(nome);
     }
 
     @Transactional(readOnly = true)
-    public List<Artista> artistiCheHannoRilasciatoTra(int fromYear, int toYear){
-        return artistaRepository.findByAlbumReleaseYearRange(fromYear,toYear);
+    public List<Artista> artistiCheHannoRilasciatoTra(int fromYear, int toYear) {
+        return artistaRepository.findByAlbumsAnnoRilascioBetween(fromYear, toYear);
     }
 
     @Transactional(readOnly = true)
-    public List<Object[]> artistiPiuPopolari(){
-        return artistaRepository.findMostFollowedArtists();
-    }
-
-    /*
-    @Transactional(readOnly = true)
-    public List<Artista> artistiConVotoMedioSuperioreA(double minAvg){
-        List< RecensioneAlbum> rec=recensioneAlbumRepository.findByVotoGreaterThan(minAvg);
-        Set<RecensioneAlbum> sRec= new HashSet<>(rec);
-        Set<Album> album=new HashSet<>(albumRepository.findByRecensioniAlbum(sRec));
-        return artistaRepository.findByAlbums(album);
-    }
-
-     */
-
-    @Transactional(readOnly = true)
-    public List<Artista> artistiPopolariDiGenere(String genere, long minFollowers){
-        return artistaRepository.findPopularByGenre(genere,minFollowers);
+    public List<Artista> artistiPiuPopolari(Long minFollowers) {
+        return artistaRepository.findByFollowerCountGreaterThanOrderByFollowerCountDesc(minFollowers);
     }
 
     @Transactional(readOnly = true)
-    public List<Artista> artistiPiuAscoltati(int pageNumber, int pageSize, String sortBy){
-        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page<Artista> pagedResult = (Page<Artista>) artistaRepository.findTopStreamingArtists(paging);
-        if (pagedResult.hasContent() ) {
-            return pagedResult.getContent();
-        }
-        else {
-            return new ArrayList<>();
-        }
+    public List<Artista> artistiPopolariDiGenere(String genere, Long minFollowers) {
+        return artistaRepository.findByGenreAndFollowerCountGreaterThan(genere, minFollowers);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Artista> artistiPiuAscoltati(int pageNumber, int pageSize, String sortBy) {
+        return artistaRepository.findByAlbumsCanzoniNumeroAscoltiGreaterThanOrderByAlbumsCanzoniNumeroAscoltiDesc(
+                0L, PageRequest.of(pageNumber, pageSize, Sort.by(sortBy)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Artista> trovaArtistiConAlmenoUnGenere(List<String> generi) {
+        return artistaRepository.findByGeneriNomeIn(generi);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Artista> trovaArtistiConTuttiIGeneri(List<String> generi) {
+        List<Artista> artistiWithAnyGenre = artistaRepository.findDistinctByGeneriNomeIn(generi);
+        return artistiWithAnyGenre.stream()
+                .filter(artista -> artistaRepository.countByIdAndGeneriNomeIn(artista.getId(), generi)
+                        == generi.size())
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = false)
-    public Artista aggiungiArtista(Artista artista){
-        if (artistaRepository.findByIdAndNome(artista.getId(),artista.getNome())!=null){
+    public Artista aggiungiArtista(Artista artista) {
+        if (artista.getNome() == null) {
+            throw new IllegalArgumentException("Nome artista obbligatorio");
+        }
+        if (artistaRepository.existsByNomeIgnoreCase(artista.getNome())) {
             throw new ArtistaGiaPresenteException();
         }
         return artistaRepository.save(artista);
     }
 
     @Transactional(readOnly = true)
-    public List<Artista> trovaArtistiConAlmenoUnGenere(List<String> generi){
-        return artistaRepository.findByAnyGenre(generi);
+    public List<Artista> artistiConReleaseRecenti(int years) {
+        int yearsAgo = LocalDate.now().getYear() - years;
+        return artistaRepository.findByAlbumsAnnoRilascioGreaterThanEqual(yearsAgo);
     }
-
-    @Transactional(readOnly = true)
-    public List<Artista> trovaArtistiConTuttiIGeneri(List<String> generi, long size){
-        return artistaRepository.findByAllGenres(generi, size);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Artista> artistiConReleaseRecenti(int years){
-        return artistaRepository.findActiveInLastYears(years);
-    }
-
 
 
 }

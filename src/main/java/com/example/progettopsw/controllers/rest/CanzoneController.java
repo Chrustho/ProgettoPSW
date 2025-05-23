@@ -19,99 +19,93 @@ public class CanzoneController {
     private CanzoneService canzoneService;
 
     @PostMapping
-    public ResponseEntity aggiungiCanzone(@RequestBody @Validated Canzone canzone){
+    public ResponseEntity<ResponseMessage> aggiungiCanzone(@RequestBody @Validated Canzone canzone) {
         try {
-            canzoneService.aggiungiCanzone(canzone);
-        }catch (CanzoneGiaPresenteException e){
-            return new ResponseEntity(new ResponseMessage("Canzone già presente"), HttpStatus.BAD_REQUEST);
+            Canzone saved = canzoneService.aggiungiCanzone(canzone);
+            return ResponseEntity.ok(new ResponseMessage("Canzone aggiunta con successo"));
+        } catch (CanzoneGiaPresenteException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Canzone già presente"));
         }
-        return new ResponseEntity(canzone,HttpStatus.OK);
     }
 
     @GetMapping("/sorted/longest")
-    public ResponseEntity trovaCanzoniPiuLunghe(){
-        List<Canzone> songs=canzoneService.trovaCanzoniPiuLunghe();
-        if (songs.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(songs,HttpStatus.OK);
+    public ResponseEntity<?> trovaCanzoniPiuLunghe() {
+        List<Canzone> songs = canzoneService.trovaCanzoniPiuLunghe();
+        return songs.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(songs);
     }
 
     @GetMapping("/sorted/shortest")
-    public ResponseEntity trovaCanzoniPiuCorte(){
-        List<Canzone> songs=canzoneService.trovaCanzoniPiuCorte();
-        if (songs.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(songs,HttpStatus.OK);
+    public ResponseEntity<?> trovaCanzoniPiuCorte() {
+        List<Canzone> songs = canzoneService.trovaCanzoniPiuCorte();
+        return songs.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(songs);
     }
 
-    @GetMapping("/search/partial_title")
-    public ResponseEntity trovaCanzoniConXNelNome(String nomeParziale){
-        if (nomeParziale.isBlank()){
-            return new ResponseEntity<>(new ResponseMessage("Nessuna keyword passata in input!"), HttpStatus.BAD_REQUEST);
-        }
-        List<Canzone> songs=canzoneService.trovaCanzoneConXNelNome(nomeParziale);
-        if (songs.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"),HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(songs,HttpStatus.OK);
+    @GetMapping("/search/by_name")
+    public ResponseEntity<?> cercaPerNome(@RequestParam String nome) {
+        if (nome.isBlank()) return ResponseEntity.badRequest().build();
+        List<Canzone> songs = canzoneService.trovaCanzonePerNome(nome);
+        return songs.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(songs);
     }
 
     @GetMapping("/search/top_rated")
-    public ResponseEntity trovaCanzoniConVotoMaggioreDi(double soglia){
-        List<Canzone> songs;
-        if (soglia>0){
-            songs=canzoneService.trovaCanzoniConVotoMaggioreDi(soglia);
-        }else {
-            songs=canzoneService.trovaCanzoniConVotoMaggioreDi(4.2);
-        }
-        if (songs.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(songs,HttpStatus.OK);
+    public ResponseEntity<?> trovaCanzoniConVotoMaggioreDi(
+            @RequestParam(defaultValue = "4.2") double minVoto) {
+        List<Canzone> songs = canzoneService.trovaCanzoniConVotoMaggioreDi(minVoto);
+        return songs.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(songs);
     }
 
     @GetMapping("/search/by_genres")
-    public ResponseEntity trovaCanzoniPerGeneri(List<String> generi, boolean tutti){
-        List<Canzone> songs;
-        if (tutti){
-            songs=canzoneService.trovaAlbumConTuttiIGeneriSpecificati(generi);
-        }else {
-            songs=canzoneService.trovaAlbumConAlmenoUnGenereSpecificato(generi);
+    public ResponseEntity<?> cercaPerGeneri(
+            @RequestParam List<String> generi,
+            @RequestParam boolean tutti) {
+        if (generi.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Specificare almeno un genere"));
         }
-        if (songs.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(songs,HttpStatus.OK);
+        List<Canzone> songs = canzoneService.trovaCanzoniPerGeneri(generi, tutti);
+        return songs.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(songs);
     }
 
-    @GetMapping("/top_reviewed")
-    public ResponseEntity trovaCanzoniPiuRecensite(){
-        List<Canzone> songs=canzoneService.canzoniPiuRecensite(10);
-        if (songs.isEmpty()){
-            return new ResponseEntity<>(new ResponseMessage("Nessun risultato"),HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(songs,HttpStatus.OK);
+    @GetMapping("/most_reviewed")
+    public ResponseEntity<?> trovaCanzoniPiuRecensite(
+            @RequestParam(defaultValue = "1") long minRecensioni) {
+        List<Canzone> songs = canzoneService.trovaCanzoniPiuRecensite(minRecensioni);
+        return songs.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(songs);
     }
 
-    @GetMapping("/top_listened")
-    public ResponseEntity top10CanzoniPiuAscoltate(){
-        List<Canzone> songs=canzoneService.top10CanzoniPiuAscoltate();
-        if (songs.isEmpty()){
-            return new ResponseEntity<>(new ResponseMessage("Nessun risultato"),HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(songs,HttpStatus.OK);
+    @GetMapping("/most_listened")
+    public ResponseEntity<?> top10CanzoniPiuAscoltate() {
+        List<Canzone> songs = canzoneService.top10CanzoniPiuAscoltate();
+        return songs.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(songs);
     }
 
-    @GetMapping("/search/top_songs_by_artist")
-    public ResponseEntity trovaNCanzoniPiuAscoltatiDiArtista(Long artistaId,int pageNumber, int pageSize, String sortBy){
-        List<Canzone> songs=canzoneService.trovaNCanzoniPiuAscoltatiDiArtista(artistaId, pageNumber, pageSize, sortBy);
-        if (songs.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(songs,HttpStatus.OK);
+    @GetMapping("/search/by_artist")
+    public ResponseEntity<?> trovaCanzoniDiArtista(
+            @RequestParam(required = true) Long artistaId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "numeroAscolti") String sortBy) {
+        List<Canzone> songs = canzoneService.trovaCanzoniDiArtista(artistaId, pageNumber, pageSize, sortBy);
+        return songs.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(songs);
     }
+
 
 
 

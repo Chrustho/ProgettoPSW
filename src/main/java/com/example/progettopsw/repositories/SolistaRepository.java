@@ -8,80 +8,42 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SolistaRepository extends JpaRepository<Solista, Long> {
+    Optional<Solista> findById(Long id);
 
-    Solista getSolistaById(Long id);
-
-    Boolean existsByNomeEqualsIgnoreCaseAndStrumentoEqualsIgnoreCase(String nome, String strumento);
-    
-    List<Solista> findByNomeIgnoreCase(String nome);
-    /**
-     * Ricerca solisti che suonano lo strumento indicato.
-     */
     List<Solista> findByStrumentoIgnoreCase(String strumento);
 
+    List<Solista> findByNomeContainingIgnoreCase(String nome);
 
-    // solisti con totale stream > soglia
-    @Query("""
-      SELECT s FROM Solista s
-      JOIN s.albums al
-      JOIN al.canzoni c
-      GROUP BY s
-      HAVING SUM(c.numeroAscolti) > :minStreams
-    """)
-    List<Solista> findHighStreamingSolisti(@Param("minStreams") long minStreams);
+    boolean existsByNomeIgnoreCaseAndStrumentoIgnoreCase(String nome, String strumento);
 
-    /**
-     * 1. Trova solisti che appartengono ad almeno uno dei generi indicati.
-     */
-    @Query("""
-      SELECT DISTINCT s
-      FROM Solista s
-      JOIN s.generi g
-      WHERE g.nome IN :generi
-    """)
-    List<Solista> findByAnyGenre(@Param("generi") List<String> generi);
+    @Query("SELECT s FROM Solista s JOIN s.albums a " +
+            "JOIN a.canzoni c GROUP BY s " +
+            "HAVING SUM(c.numeroAscolti) > :minStreams " +
+            "ORDER BY SUM(c.numeroAscolti) DESC")
+    List<Solista> findByTotalStreamsGreaterThan(@Param("minStreams") Long minStreams);
 
-    /**
-     * 2. Trova solisti i cui generi includono tutti quelli indicati.
-     */
-    @Query("""
-      SELECT s
-      FROM Solista s
-      JOIN s.generi g
-      WHERE g.nome IN :generi
-      GROUP BY s
-      HAVING COUNT(DISTINCT g.nome) = :size
-    """)
-    List<Solista> findByAllGenres(@Param("generi") List<String> generi,
-                                  @Param("size") long size);
+    @Query("SELECT s FROM Solista s JOIN s.generi g " +
+            "WHERE g.nome IN :generi")
+    List<Solista> findByGenres(@Param("generi") List<String> generi);
 
-    /**
-     * 3. Trova solisti con media voto degli album >= soglia.
-     */
-    @Query("""
-      SELECT s
-      FROM Solista s
-      JOIN s.albums al
-      JOIN al.recensioniAlbum r
-      GROUP BY s
-      HAVING AVG(r.voto) >= :minAvg
-    """)
-    List<Solista> findByAverageAlbumRatingGreaterThan(@Param("minAvg") double minAverage);
+    @Query("SELECT s FROM Solista s JOIN s.generi g " +
+            "WHERE g.nome IN :generi GROUP BY s " +
+            "HAVING COUNT(DISTINCT g.nome) = :generiCount")
+    List<Solista> findByAllGenres(
+            @Param("generi") List<String> generi,
+            @Param("generiCount") Long generiCount);
 
-    /**
-     * 5. Trova top N solisti per numero di follower.
-     */
-    @Query("""
-      SELECT s
-      FROM Solista s
-      LEFT JOIN s.follower u
-      GROUP BY s
-      ORDER BY COUNT(u) DESC
-    """)
-    Page<Solista> findTopByFollowerCount(Pageable topN);
+    @Query("SELECT s FROM Solista s JOIN s.albums a " +
+            "JOIN a.recensioniAlbum r GROUP BY s " +
+            "HAVING AVG(r.voto) > :minAvg")
+    List<Solista> findByAverageRatingGreaterThan(@Param("minAvg") Double minAvg);
 
+    @Query("SELECT s FROM Solista s JOIN s.follower f " +
+            "GROUP BY s ORDER BY COUNT(f) DESC")
+    Page<Solista> findAllOrderByFollowerCount(Pageable pageable);
 
 }
 

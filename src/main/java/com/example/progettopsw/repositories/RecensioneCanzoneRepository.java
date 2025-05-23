@@ -6,40 +6,49 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface RecensioneCanzoneRepository extends JpaRepository<RecensioneCanzone, Long> {
 
-    RecensioneCanzone getRecensioneCanzoneById(Long id);
+    Optional<RecensioneCanzone> findById(Long id);
 
-    /**
-     * Media voti per una canzone.
-     */
-    @Query("SELECT AVG(rc.voto) FROM RecensioneCanzone rc WHERE rc.canzone.id = :cid")
-    Double averageRatingBySong(@Param("cid") Long canzoneId);
+    List<RecensioneCanzone> findByDataRecensioneAfter(LocalDate date);
 
-    /**
-     * Recensioni contenenti una parola chiave.
-     */
-    List<RecensioneCanzone> findByTestoContainingIgnoreCase(String keyword);
+    List<RecensioneCanzone> findByVotoBetween(double min, double max);
 
-    /**
-     * Ultime N recensioni di canzoni, ordinate per id decrescente.
-     */
-    List<RecensioneCanzone> findTop10ByOrderByIdDesc();
+    List<RecensioneCanzone> findByCanzoneIdOrderByDataRecensioneDesc(Long canzoneId);
 
-    // utenti che hanno recensito una specifica canzone e la seguono
-    @Query("""
-      SELECT rc.user FROM RecensioneCanzone rc
-      WHERE rc.canzone.id = :cid
-        AND rc.user MEMBER OF rc.canzone.album.artista.follower
-    """)
-    List<Users> findReviewersAlsoFollowingArtist(@Param("cid") Long canzoneId);
+    // Nuove query utili
+    @Query("SELECT r FROM RecensioneCanzone r WHERE r.canzone.id = :canzoneId AND " +
+            "LENGTH(r.testo) >= :minLength")
+    List<RecensioneCanzone> findDetailedReviewsBySong(
+            @Param("canzoneId") Long canzoneId,
+            @Param("minLength") Integer minLength);
 
-    // feedback rapido: percentuale di recensioni senza testo
-    @Query("""
-      SELECT (SUM(CASE WHEN r.testo IS NULL OR r.testo = '' THEN 1 ELSE 0 END) * 100.0) / COUNT(r)
-      FROM RecensioneCanzone r
-    """)
-    Double percentageEmptyFeedback();
+    @Query("SELECT r FROM RecensioneCanzone r WHERE r.user.id = :userId " +
+            "ORDER BY r.dataRecensione DESC")
+    List<RecensioneCanzone> findUserReviewsOrderByDate(@Param("userId") Long userId);
+
+    @Query("SELECT AVG(r.voto) FROM RecensioneCanzone r WHERE r.canzone.id = :canzoneId")
+    Optional<Double> calculateSongAverageRating(@Param("canzoneId") Long canzoneId);
+
+    @Query("SELECT r FROM RecensioneCanzone r WHERE r.canzone.album.artista.id = :artistaId " +
+            "ORDER BY r.dataRecensione DESC")
+    List<RecensioneCanzone> findByArtistaOrderByDate(@Param("artistaId") Long artistaId);
+
+    @Query("SELECT r FROM RecensioneCanzone r WHERE " +
+            "LOWER(r.testo) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<RecensioneCanzone> findByKeywordInText(@Param("keyword") String keyword);
+
+
+    @Query("SELECT r FROM RecensioneCanzone r WHERE r.canzone.album.id = :albumId " +
+            "ORDER BY r.dataRecensione DESC")
+    List<RecensioneCanzone> findByAlbumOrderByDate(@Param("albumId") Long albumId);
+
+    @Query("SELECT COUNT(DISTINCT r.user.id) FROM RecensioneCanzone r " +
+            "WHERE r.canzone.id = :canzoneId")
+    Long countUniqueReviewersBySong(@Param("canzoneId") Long canzoneId);
+
 }

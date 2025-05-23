@@ -15,35 +15,39 @@ public class BandService {
     private BandRepository bandRepository;
 
     @Transactional(readOnly = true)
-    public List<Band> trovaBandConVotoAlbum(double minAvg){
-        return bandRepository.findHighRatedBands(minAvg);
+    public List<Band> trovaBandConVotoAlbum(double minAvg) {
+        return bandRepository.findByAverageAlbumRatingGreaterThan(minAvg);
     }
 
     @Transactional(readOnly = true)
-    public List<Band> trovaBandPiuAscoltate(long minStreams){
-        return bandRepository.findTopStreamedBands(minStreams);
+    public List<Band> trovaBandPiuAscoltate(long minStreams) {
+        return bandRepository.findByTotalStreamsGreaterThan(minStreams);
     }
 
     @Transactional(readOnly = true)
-    public List<Band> trovaBandConAlmenoUnGenere(List<String> generi){
-        return bandRepository.findByAnyGenre(generi);
+    public List<Band> trovaBandConAlmenoUnGenere(List<String> generi) {
+        return bandRepository.findByGeneriNomeIn(generi);
     }
 
     @Transactional(readOnly = true)
-    public List<Band> trovaBandConTuttiIGeneri(List<String> generi, long size){
-        return bandRepository.findByAllGenres(generi,size);
+    public List<Band> trovaBandConTuttiIGeneri(List<String> generi) {
+        return bandRepository.findByAllGenres(generi, (long) generi.size());
     }
 
     @Transactional(readOnly = true)
-    public List<Band> trovaBandSeguiteDaUser(Long userId){
-        return bandRepository.findFollowedByUser(userId);
+    public List<Band> trovaBandSeguiteDaUser(Long userId) {
+        return bandRepository.findByFollowerId(userId);
     }
 
-    @Transactional(readOnly = false)
-    public Band aggiungiBand(Band band){
-        if (bandRepository.findByNome(band.getNome())!=null){
+    @Transactional
+    public Band aggiungiBand(Band band) {
+        if (band.getNome() == null) {
+            throw new IllegalArgumentException("Nome band obbligatorio");
+        }
+        if (bandRepository.existsByNomeIgnoreCase(band.getNome())) {
             throw new ArtistaGiaPresenteException();
         }
         return bandRepository.save(band);
     }
+
 }

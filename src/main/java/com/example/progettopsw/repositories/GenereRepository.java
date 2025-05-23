@@ -7,112 +7,37 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GenereRepository extends JpaRepository<Genere, Long> {
 
-    Genere getGenereById(Long id);
+    Optional<Genere> findById(Long id);
 
+    boolean existsByNomeIgnoreCase(String nome);
 
-    Boolean findByNomeIgnoreCase(String nome);
-    /**
-     * Restituisce generi il cui nome inizia con il prefisso dato.
-     */
     List<Genere> findByNomeStartingWithIgnoreCase(String prefix);
 
-    /**
-     * Generi associati a più di M album.
-     */
-    @Query("SELECT g FROM Genere g JOIN g.albums a GROUP BY g HAVING COUNT(a) > :m")
-    List<Genere> findPopularGenres(@Param("m") long minAlbums);
+    @Query("SELECT g FROM Genere g JOIN g.albums a " +
+            "GROUP BY g HAVING COUNT(a) >= :minAlbums")
+    List<Genere> findByMinAlbumCount(@Param("minAlbums") Long minAlbums);
 
+    @Query("SELECT g FROM Genere g JOIN g.albums a " +
+            "JOIN a.canzoni c GROUP BY g " +
+            "HAVING SUM(c.numeroAscolti) > :minStreams")
+    List<Genere> findByTotalStreamsGreaterThan(@Param("minStreams") Long minStreams);
 
-    // generi seguiti indirettamente (album preferiti di user)
-    @Query("""
-      SELECT DISTINCT g FROM Genere g
-      JOIN g.albums al
-      JOIN al.utentiPreferiti u
-      WHERE u.id = :userId
-    """)
-    List<Genere> findUserFavoriteGenres(@Param("userId") Long userId);
+    @Query("SELECT g FROM Genere g JOIN g.albums a " +
+            "JOIN a.recensioniAlbum r GROUP BY g " +
+            "HAVING AVG(r.voto) > :minAvg")
+    List<Genere> findByAverageRatingGreaterThan(@Param("minAvg") Double minAvg);
 
-    /**
-     * Trova generi il cui totale di ascolti su tutte le canzoni degli album
-     * supera una certa soglia.
-     */
-    @Query("""
-      SELECT g
-      FROM Genere g
-      JOIN g.albums al
-      JOIN al.canzoni c
-      GROUP BY g
-      HAVING SUM(c.numeroAscolti) > :minStreams
-    """)
-    List<Genere> findGenresWithTotalStreamsGreaterThan(@Param("minStreams") long minStreams);
+    @Query("SELECT g FROM Genere g JOIN g.artisti a " +
+            "JOIN a.follower f GROUP BY g " +
+            "HAVING COUNT(f) > :minFollowers")
+    List<Genere> findByTotalFollowersGreaterThan(@Param("minFollowers") Long minFollowers);
 
-    /**
-     * Trova generi con album mediamente ben recensiti (voto medio > soglia).
-     */
-    @Query("""
-      SELECT g
-      FROM Genere g
-      JOIN g.albums al
-      JOIN al.recensioniAlbum r
-      GROUP BY g
-      HAVING AVG(r.voto) > :minAvg
-    """)
-    List<Genere> findGenresWithHighRatedAlbums(@Param("minAvg") double minAverage);
-
-    /**
-     * Trova generi i cui artisti associati hanno complessivamente
-     * più di N follower.
-     */
-    @Query("""
-      SELECT g
-      FROM Genere g
-      JOIN g.artisti a
-      JOIN a.follower u
-      GROUP BY g
-      HAVING COUNT(u) > :minFollowers
-    """)
-    List<Genere> findGenresByArtistFollowersGreaterThan(@Param("minFollowers") long minFollowers);
-
-    /**
-     * Trova generi che co-appaiono insieme a un dato genere
-     * negli stessi album (utile per suggerimenti “simili”).
-     */
-    @Query("""
-      SELECT DISTINCT g2
-      FROM Genere g1
-      JOIN g1.albums al
-      JOIN al.generi g2
-      WHERE g1.nome = :genreName
-        AND g2.nome <> :genreName
-    """)
-    List<Genere> findCooccurringGenres(@Param("genreName") String genreName);
-
-    /**
-     * Top N generi ordinati per somma di stream, paginati.
-     */
-    @Query("""
-      SELECT g
-      FROM Genere g
-      JOIN g.albums al
-      JOIN al.canzoni c
-      GROUP BY g
-      ORDER BY SUM(c.numeroAscolti) DESC
-    """)
-    List<Genere> findTopGenresByStreams(Pageable topN);
-
-    /**
-            * Generi con almeno M artisti associati.
-            */
-    @Query("""
-      SELECT g
-      FROM Genere g
-      JOIN g.artisti a
-      GROUP BY g
-      HAVING COUNT(a) >= :minArtists
-    """)
-    List<Genere> findGenresWithAtLeastArtistCount(@Param("minArtists") long minArtists);
+    @Query("SELECT g FROM Genere g JOIN g.artisti a " +
+            "GROUP BY g HAVING COUNT(a) >= :minArtists")
+    List<Genere> findByMinArtistCount(@Param("minArtists") Long minArtists);
 
 }

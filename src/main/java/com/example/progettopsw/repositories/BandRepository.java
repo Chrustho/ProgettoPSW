@@ -6,72 +6,37 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BandRepository extends JpaRepository<Band, Long> {
 
-    Band getBandById(Long id);
+    Optional<Band> findById(Long id);
 
-    /*
-    * Trova band con Nome
-     */
-    Band findByNome(String nome);
+    Optional<Band> findByNomeIgnoreCase(String nome);
 
-    /**
-     * Band i cui membri suonano uno specifico strumento.
-     */
-    @Query("SELECT DISTINCT b FROM Band b JOIN b.membri s " +
-            "WHERE LOWER(s.strumento) = LOWER(:strumento)")
-    List<Band> findByMemberInstrument(@Param("strumento") String strumento);
+    @Query("SELECT DISTINCT b FROM Band b JOIN b.membri m WHERE LOWER(m.strumento) = LOWER(:strumento)")
+    List<Band> findByMembersInstrument(@Param("strumento") String strumento);
 
-    // band con rating album combinato >= soglia
-    @Query("""
-      SELECT b FROM Band b
-      JOIN b.albums al
-      JOIN al.recensioniAlbum r
-      GROUP BY b
-      HAVING AVG(r.voto) >= :minAvg
-    """)
-    List<Band> findHighRatedBands(@Param("minAvg") double minAverage);
+    @Query("SELECT b FROM Band b JOIN b.albums a JOIN a.recensioniAlbum r " +
+            "GROUP BY b HAVING AVG(r.voto) >= :minAvg")
+    List<Band> findByAverageAlbumRatingGreaterThan(@Param("minAvg") Double minAvg);
 
-    // band con somma stream album > soglia
-    @Query("""
-      SELECT b FROM Band b
-      JOIN b.albums al
-      JOIN al.canzoni c
-      GROUP BY b
-      HAVING SUM(c.numeroAscolti) > :minStreams
-    """)
-    List<Band> findTopStreamedBands(@Param("minStreams") long minStreams);
+    @Query("SELECT b FROM Band b JOIN b.albums a JOIN a.canzoni c " +
+            "GROUP BY b HAVING SUM(c.numeroAscolti) > :minStreams")
+    List<Band> findByTotalStreamsGreaterThan(@Param("minStreams") Long minStreams);
 
-    // ————— Cerca band che hanno almeno un genere tra quelli indicati
-    @Query("""
-      SELECT DISTINCT b
-      FROM Band b
-      JOIN b.generi g
-      WHERE g.nome IN :generi
-    """)
-    List<Band> findByAnyGenre(@Param("generi") List<String> generi);
-
-    // ————— Cerca band che hanno TUTTI i generi indicati
-    @Query("""
-      SELECT b
-      FROM Band b
-      JOIN b.generi g
-      WHERE g.nome IN :generi
-      GROUP BY b
-      HAVING COUNT(DISTINCT g.nome) = :size
-    """)
+    @Query("SELECT b FROM Band b JOIN b.generi g " +
+            "WHERE g.nome IN :generi GROUP BY b " +
+            "HAVING COUNT(DISTINCT g.nome) = :generiCount")
     List<Band> findByAllGenres(@Param("generi") List<String> generi,
-                               @Param("size") long size);
+                               @Param("generiCount") Long generiCount);
 
+    List<Band> findByGeneriNomeIn(List<String> generi);
 
-    // ————— Band seguite da uno specifico utente
-    @Query("""
-      SELECT DISTINCT b
-      FROM Band b
-      JOIN b.follower u
-      WHERE u.id = :userId
-    """)
-    List<Band> findFollowedByUser(@Param("userId") Long userId);
+    @Query("SELECT DISTINCT b FROM Band b JOIN b.follower f WHERE f.id = :userId")
+    List<Band> findByFollowerId(@Param("userId") Long userId);
+
+    boolean existsByNomeIgnoreCase(String nome);
+
 
 }

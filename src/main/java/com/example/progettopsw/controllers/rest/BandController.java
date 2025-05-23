@@ -4,6 +4,7 @@ import com.example.progettopsw.entities.Band;
 import com.example.progettopsw.services.BandService;
 import com.example.progettopsw.support.ResponseMessage;
 import com.example.progettopsw.support.exceptions.ArtistaGiaPresenteException;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,63 +20,61 @@ public class BandController {
     private BandService bandService;
 
     @PostMapping
-    public ResponseEntity aggiungiBand(@RequestBody @Validated Band band){
+    public ResponseEntity<ResponseMessage> aggiungiBand(@RequestBody @Validated Band band) {
         try {
-            bandService.aggiungiBand(band);
-        }catch (ArtistaGiaPresenteException e){
-            return new ResponseEntity<>(new ResponseMessage("Band già presente in catalogo"), HttpStatus.BAD_REQUEST);
+            Band savedBand = bandService.aggiungiBand(band);
+            return ResponseEntity.ok(new ResponseMessage("Band aggiunta correttamente"));
+        } catch (ArtistaGiaPresenteException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Band già presente in catalogo"));
         }
-        return new ResponseEntity(new ResponseMessage("Band aggiunta correttamente"), HttpStatus.OK);
     }
 
     @GetMapping("/search/by_avg_vote")
-    public ResponseEntity trovaBandConVotoMedio(@RequestParam double minAvg){
-        List<Band> bands;
-        if (minAvg>0){
-            bands=bandService.trovaBandConVotoAlbum(minAvg);
-        }else{
-            bands=bandService.trovaBandConVotoAlbum(4.2);
-        }
-        if (bands.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(bands,HttpStatus.OK);
+    public ResponseEntity<?> trovaBandConVotoMedio(
+            @RequestParam(defaultValue = "4.0") double minAvg) {
+        List<Band> bands = bandService.trovaBandConVotoAlbum(minAvg);
+        return bands.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(bands);
     }
 
     @GetMapping("/most_listened")
-    public ResponseEntity trovaBandPiuAscoltate(){
-        List<Band> bands=bandService.trovaBandPiuAscoltate(100000);
-        if (bands.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun Risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(bands,HttpStatus.OK);
+    public ResponseEntity<?> trovaBandPiuAscoltate(
+            @RequestParam(defaultValue = "0") long minStreams) {
+        List<Band> bands = bandService.trovaBandPiuAscoltate(minStreams);
+        return bands.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(bands);
     }
 
-    @GetMapping("/search/by_generi")
-    public ResponseEntity trovaBandDaGenere(@RequestParam List<String> generi, @RequestParam boolean tutti){
-        if (generi.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Inserire generi!"), HttpStatus.BAD_REQUEST);
+    @GetMapping("/search/by_genres")
+    public ResponseEntity<?> trovaBandDaGenere(
+            @RequestParam List<String> generi,
+            @RequestParam boolean tutti) {
+        if (generi.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new ResponseMessage("Inserire generi!"));
         }
-        List<Band> bands;
-        if (tutti){
-            bands=bandService.trovaBandConTuttiIGeneri(generi,generi.size());
-        }else {
-            bands=bandService.trovaBandConAlmenoUnGenere(generi);
-        }
-        if (bands.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(bands, HttpStatus.OK);
+
+        List<Band> bands = tutti
+                ? bandService.trovaBandConTuttiIGeneri(generi)
+                : bandService.trovaBandConAlmenoUnGenere(generi);
+
+        return bands.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(bands);
     }
 
     @GetMapping("/search/followed_by")
-    public ResponseEntity trovaBandSeguiteDaUser(@RequestParam Long userId){
-        List<Band> bands=bandService.trovaBandSeguiteDaUser(userId);
-        if (bands.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(bands,HttpStatus.OK);
+    public ResponseEntity<?> trovaBandSeguiteDaUser(
+            @RequestParam Long userId) {
+        List<Band> bands = bandService.trovaBandSeguiteDaUser(userId);
+        return bands.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(bands);
     }
+
 
 
 

@@ -20,54 +20,51 @@ public class SolistaService {
     @Autowired
     private SolistaRepository solistaRepository;
 
-    @Transactional(readOnly = true)
-    public List<Solista> trovaSolistiCheSuonano(String stumento){
-        return solistaRepository.findByStrumentoIgnoreCase(stumento);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Solista> trovaSolistaConPiuDiNStream(long minStreams){
-        return solistaRepository.findHighStreamingSolisti(minStreams);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Solista> cercaPerNome(String nome){
-        return solistaRepository.findByNomeIgnoreCase(nome);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Solista> trovaSolistaConAlmenoUnGenereSpecificato(List<String> generi){
-        return solistaRepository.findByAnyGenre(generi);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Solista> trovaSolistaConTuttiIGeneri(List<String> generi){
-        return solistaRepository.findByAllGenres(generi, generi.size());
-    }
-
-    @Transactional(readOnly = true)
-    public List<Solista> trovaSolistaConVotiMAggioriDi(double minAvg){
-        return solistaRepository.findByAverageAlbumRatingGreaterThan(minAvg);
-    }
-
-    @Transactional(readOnly = false)
-    public void aggiungiSolista(Solista solista){
-        if (solistaRepository.existsByNomeEqualsIgnoreCaseAndStrumentoEqualsIgnoreCase(solista.getNome(),solista.getStrumento())){
+    public Solista aggiungiSolista(Solista solista) {
+        if (solista.getNome() == null || solista.getStrumento() == null) {
+            throw new IllegalArgumentException("Nome e strumento sono obbligatori");
+        }
+        if (solistaRepository.existsByNomeIgnoreCaseAndStrumentoIgnoreCase(
+                solista.getNome(), solista.getStrumento())) {
             throw new SolistaGiaPresenteException("Solista già presente");
         }
-        solistaRepository.save(solista);
+        return solistaRepository.save(solista);
     }
 
     @Transactional(readOnly = true)
-    public List<Solista> topSolistiPerNumeroDiFollower( int pageNumber, int pageSize, String sortBy){
-        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page<Solista> pagedResult = solistaRepository.findTopByFollowerCount(paging);
-        if (pagedResult.hasContent()){
-            return pagedResult.getContent();
-        }else {
-            return new ArrayList<>();
-        }
+    public List<Solista> trovaSolistiPerStrumento(String strumento) {
+        return solistaRepository.findByStrumentoIgnoreCase(strumento);
     }
+
+    @Transactional(readOnly = true)
+    public List<Solista> trovaSolistiPiuAscoltati(long minStreams) {
+        return solistaRepository.findByTotalStreamsGreaterThan(minStreams);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Solista> cercaPerNome(String nome) {
+        return solistaRepository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Solista> trovaSolistiPerGeneri(List<String> generi, boolean tutti) {
+        return tutti
+                ? solistaRepository.findByAllGenres(generi, (long) generi.size())
+                : solistaRepository.findByGenres(generi);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Solista> trovaSolistiPerMediaVoti(double minAvg) {
+        return solistaRepository.findByAverageRatingGreaterThan(minAvg);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Solista> trovaSolistiPiuSeguiti(int pageNumber, int pageSize, String sortBy) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+        Page<Solista> result = solistaRepository.findAllOrderByFollowerCount(pageable);
+        return result.getContent();
+    }
+
 
 
 }
