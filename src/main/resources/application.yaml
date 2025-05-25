@@ -7,3 +7,20 @@ spring:
     url: jdbc:mysql://localhost:3306/PSWDB?createDatabaseIfNotExist=true
     username: root
     password: brun1chr1s13
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: TestClient
+            client-secret: 4u7x9VFNo7URRzx31jzoUcgSkLezvlon
+            scope: openid,profile,email
+            redirect-uri: http://localhost:8082/login/oauth2/code/keycloak
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/ProgettoPSW
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
