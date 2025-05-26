@@ -35,8 +35,4 @@ public class Canzone {
     @JsonIgnore
     private Album album;
 
-
-    @OneToMany(mappedBy = "canzone", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<RecensioneCanzone> recensioni = new HashSet<>();
 }

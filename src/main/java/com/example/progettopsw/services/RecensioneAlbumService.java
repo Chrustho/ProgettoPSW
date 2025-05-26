@@ -17,11 +17,6 @@ public class RecensioneAlbumService {
     @Autowired
     private RecensioneAlbumRepository recensioneAlbumRepository;
 
-    @Autowired
-    private AlbumRepository albumRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     public RecensioneAlbum aggiungiRecensione(RecensioneAlbum recensione) {
         if (recensione.getAlbum() == null || recensione.getUser() == null ||
@@ -64,10 +59,6 @@ public class RecensioneAlbumService {
         return recensioneAlbumRepository.findByKeywordInText(keyword);
     }
 
-    @Transactional(readOnly = true)
-    public Long contaParoleRecensioni(Long albumId) {
-        return recensioneAlbumRepository.countTotalWordsByAlbum(albumId);
-    }
 
     @Transactional(readOnly = true)
     public List<RecensioneAlbum> trovaRecensioniArtista(Long artistaId) {

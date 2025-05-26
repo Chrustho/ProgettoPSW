@@ -28,14 +28,7 @@ public class UserController {
         return new ResponseEntity(new ResponseMessage("Utente aggiunto correttamente!"), HttpStatus.OK);
     }
 
-    @GetMapping("/users/reviewers_leaderboard")
-    public ResponseEntity recensoriPiuAttivi(){
-        List<Users> users=userService.recensoriPiuAttivi(10);
-        if (users.isEmpty()){
-            return new ResponseEntity(new ResponseMessage("Nessun risultato!"), HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity(users,HttpStatus.OK);
-    }
+
 
     @GetMapping("/users/users_leaderboard")
     public ResponseEntity utentiPiuAttivi(){

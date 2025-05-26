@@ -29,10 +29,6 @@ public class GenereService {
         return genereRepository.findByNomeStartingWithIgnoreCase(prefisso);
     }
 
-    @Transactional(readOnly = true)
-    public List<Genere> trovaGeneriPopolari(long minAlbums) {
-        return genereRepository.findByMinAlbumCount(minAlbums);
-    }
 
     @Transactional(readOnly = true)
     public List<Genere> trovaGeneriPiuAscoltati(long minStreams) {
@@ -49,9 +45,5 @@ public class GenereService {
         return genereRepository.findByTotalFollowersGreaterThan(minFollowers);
     }
 
-    @Transactional(readOnly = true)
-    public List<Genere> trovaGeneriPiuSuonati(long minArtists) {
-        return genereRepository.findByMinArtistCount(minArtists);
-    }
 
 }

@@ -32,10 +32,7 @@ public class ArtistaService {
         return artistaRepository.findByNomeContainingIgnoreCase(nome);
     }
 
-    @Transactional(readOnly = true)
-    public List<Artista> artistiCheHannoRilasciatoTra(int fromYear, int toYear) {
-        return artistaRepository.findByAlbumsAnnoRilascioBetween(fromYear, toYear);
-    }
+
 
     @Transactional(readOnly = true)
     public List<Artista> artistiPiuPopolari(Long minFollowers) {
@@ -47,11 +44,7 @@ public class ArtistaService {
         return artistaRepository.findByGenreAndFollowerCountGreaterThan(genere, minFollowers);
     }
 
-    @Transactional(readOnly = true)
-    public List<Artista> artistiPiuAscoltati(int pageNumber, int pageSize, String sortBy) {
-        return artistaRepository.findByAlbumsCanzoniNumeroAscoltiGreaterThanOrderByAlbumsCanzoniNumeroAscoltiDesc(
-                0L, PageRequest.of(pageNumber, pageSize, Sort.by(sortBy)));
-    }
+
 
     @Transactional(readOnly = true)
     public List<Artista> trovaArtistiConAlmenoUnGenere(List<String> generi) {

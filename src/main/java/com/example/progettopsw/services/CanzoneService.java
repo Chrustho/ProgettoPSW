@@ -46,10 +46,7 @@ public class CanzoneService {
         return canzoneRepository.findByNomeContainingIgnoreCase(nomeParziale);
     }
 
-    @Transactional(readOnly = true)
-    public List<Canzone> trovaCanzoniConVotoMaggioreDi(double soglia) {
-        return canzoneRepository.findByAverageRatingGreaterThan(soglia);
-    }
+
 
     @Transactional(readOnly = true)
     public List<Canzone> trovaCanzoniPerGeneri(List<String> generi, boolean tutti) {
@@ -58,10 +55,7 @@ public class CanzoneService {
                 : canzoneRepository.findByAlbumGenres(generi);
     }
 
-    @Transactional(readOnly = true)
-    public List<Canzone> trovaCanzoniPiuRecensite(long minRecensioni) {
-        return canzoneRepository.findByMinReviewCount(minRecensioni);
-    }
+
 
     @Transactional(readOnly = true)
     public List<Canzone> top10CanzoniPiuAscoltate() {

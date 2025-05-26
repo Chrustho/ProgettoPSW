@@ -15,12 +15,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Boolean existsByEmail(String email);
 
-    /**
-     * Utenti con almeno N recensioni di canzoni.
-     */
-    @Query("SELECT u FROM Users u JOIN u.recensioniCanzoni rc " +
-            "GROUP BY u HAVING COUNT(rc) >= :n")
-    List<Users> findActiveSongReviewers(@Param("n") long minReviews);
 
     /**
      * Cerca utente per email (case-insensitive).

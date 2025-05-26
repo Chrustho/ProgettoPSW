@@ -47,14 +47,6 @@ public interface RecensioneAlbumRepository extends JpaRepository<RecensioneAlbum
             "LOWER(r.testo) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<RecensioneAlbum> findByKeywordInText(@Param("keyword") String keyword);
 
-    @Query("SELECT COUNT(DISTINCT r.user.id) FROM RecensioneAlbum r " +
-            "WHERE r.album.id = :albumId")
-    Long countUniqueReviewersByAlbum(@Param("albumId") Long albumId);
 
-    @Query("""
-      SELECT SUM(LENGTH(r.testo) - LENGTH(REPLACE(r.testo, ' ', '')) + 1)
-      FROM RecensioneAlbum r WHERE r.album.id = :albumId
-    """)
-    Long countTotalWordsByAlbum(@Param("albumId") Long albumId);
 
 }

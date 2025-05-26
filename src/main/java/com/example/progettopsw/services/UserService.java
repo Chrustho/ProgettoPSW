@@ -15,10 +15,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public List<Users> recensoriPiuAttivi(int n){
-        return userRepository.findActiveSongReviewers(n);
-    }
 
     @Transactional(readOnly = true)
     public List<Users> utentiPiuAttivi(int m, int n){

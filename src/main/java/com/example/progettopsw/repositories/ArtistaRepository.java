@@ -17,7 +17,6 @@ public interface ArtistaRepository extends JpaRepository<Artista,Long> {
 
     List<Artista> findByNomeContainingIgnoreCase(String nome);
 
-    List<Artista> findByAlbumsAnnoRilascioBetween(Integer fromYear, Integer toYear);
 
     @Query("SELECT a FROM Artista a WHERE SIZE(a.follower) > :minFollowers ORDER BY SIZE(a.follower) DESC")
     List<Artista> findByFollowerCountGreaterThanOrderByFollowerCountDesc(@Param("minFollowers") Long minFollowers);
@@ -28,8 +27,7 @@ public interface ArtistaRepository extends JpaRepository<Artista,Long> {
             @Param("minFollowers") Long minFollowers
     );
 
-    List<Artista> findByAlbumsCanzoniNumeroAscoltiGreaterThanOrderByAlbumsCanzoniNumeroAscoltiDesc(
-            Long minStreams, Pageable pageable);
+
 
     List<Artista> findByGeneriNomeIn(List<String> generi);
 

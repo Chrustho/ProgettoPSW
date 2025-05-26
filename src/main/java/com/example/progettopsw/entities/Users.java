@@ -60,9 +60,7 @@ public class Users {
     @JsonIgnore
     private Set<RecensioneAlbum> recensioniAlbum = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<RecensioneCanzone> recensioniCanzoni = new HashSet<>();
+
 
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.MERGE)
     @JsonIgnore

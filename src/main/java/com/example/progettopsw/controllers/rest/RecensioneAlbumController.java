@@ -81,5 +81,10 @@ public class RecensioneAlbumController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(recensioni);
     }
-
+    
+    @PostMapping("/review")
+    public ResponseEntity<RecensioneAlbum> submitReview(@RequestBody @Validated RecensioneAlbum review) {
+        RecensioneAlbum savedReview = recensioneAlbumService.aggiungiRecensione(review);
+        return ResponseEntity.ok(savedReview);
+    }
 }

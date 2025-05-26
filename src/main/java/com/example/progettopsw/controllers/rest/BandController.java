@@ -66,14 +66,7 @@ public class BandController {
                 : ResponseEntity.ok(bands);
     }
 
-    @GetMapping("/search/followed_by")
-    public ResponseEntity<?> trovaBandSeguiteDaUser(
-            @RequestParam Long userId) {
-        List<Band> bands = bandService.trovaBandSeguiteDaUser(userId);
-        return bands.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(bands);
-    }
+
 
 
 

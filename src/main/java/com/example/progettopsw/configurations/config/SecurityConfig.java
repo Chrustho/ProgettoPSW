@@ -1,4 +1,4 @@
-package com.example.progettopsw.config;
+package com.example.progettopsw.configurations.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

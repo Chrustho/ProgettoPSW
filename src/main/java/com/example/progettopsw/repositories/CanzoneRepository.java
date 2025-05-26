@@ -24,9 +24,7 @@ public interface CanzoneRepository extends JpaRepository<Canzone, Long> {
 
     List<Canzone> findByNomeContainingIgnoreCase(String partial);
 
-    @Query("SELECT c FROM Canzone c JOIN c.recensioni r " +
-            "GROUP BY c HAVING AVG(r.voto) > :minAvg")
-    List<Canzone> findByAverageRatingGreaterThan(@Param("minAvg") Double minAvg);
+
 
     @Query("SELECT DISTINCT c FROM Canzone c JOIN c.album a " +
             "JOIN a.generi g WHERE g.nome IN :generi")
@@ -39,9 +37,7 @@ public interface CanzoneRepository extends JpaRepository<Canzone, Long> {
             @Param("generi") List<String> generi,
             @Param("generiCount") Long generiCount);
 
-    @Query("SELECT c FROM Canzone c JOIN c.recensioni r " +
-            "GROUP BY c HAVING COUNT(r) >= :minReviews")
-    List<Canzone> findByMinReviewCount(@Param("minReviews") Long minReviews);
+
 
     @Query("SELECT c FROM Canzone c WHERE " +
             "LOWER(c.nome) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +

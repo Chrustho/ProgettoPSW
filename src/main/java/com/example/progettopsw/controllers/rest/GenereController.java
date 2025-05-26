@@ -39,14 +39,6 @@ public class GenereController {
                 : ResponseEntity.ok(genres);
     }
 
-    @GetMapping("/most_popular")
-    public ResponseEntity<?> trovaGeneriPiuPopolari(
-            @RequestParam(defaultValue = "15") long minAlbums) {
-        List<Genere> genres = genereService.trovaGeneriPopolari(minAlbums);
-        return genres.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(genres);
-    }
 
     @GetMapping("/most_listened")
     public ResponseEntity<?> trovaGeneriPiuAscoltati(
@@ -75,14 +67,7 @@ public class GenereController {
                 : ResponseEntity.ok(genres);
     }
 
-    @GetMapping("/most_played")
-    public ResponseEntity<?> trovaGeneriPiuSuonati(
-            @RequestParam(defaultValue = "15") long minArtists) {
-        List<Genere> genres = genereService.trovaGeneriPiuSuonati(minArtists);
-        return genres.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(genres);
-    }
+
 
 
 

@@ -38,15 +38,6 @@ public class ArtistaController {
                 : ResponseEntity.ok(artisti);
     }
 
-    @GetMapping("/search/by_release_years")
-    public ResponseEntity<?> cercaPerAnniRilascio(
-            @RequestParam int fromYear,
-            @RequestParam int toYear) {
-        List<Artista> artisti = artistaService.artistiCheHannoRilasciatoTra(fromYear, toYear);
-        return artisti.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(artisti);
-    }
 
     @GetMapping("/most_popular")
     public ResponseEntity<?> artistiPiuPopolari(
@@ -68,16 +59,7 @@ public class ArtistaController {
                 : ResponseEntity.ok(artisti);
     }
 
-    @GetMapping("/most_streamed")
-    public ResponseEntity<?> artistiPiuAscoltati(
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(defaultValue = "id") String sortBy) {
-        List<Artista> artisti = artistaService.artistiPiuAscoltati(pageNumber, pageSize, sortBy);
-        return artisti.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(artisti);
-    }
+
 
     @GetMapping("/search/by_genres")
     public ResponseEntity<?> cercaPerGeneri(

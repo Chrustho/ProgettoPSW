@@ -33,8 +33,6 @@ public interface BandRepository extends JpaRepository<Band, Long> {
 
     List<Band> findByGeneriNomeIn(List<String> generi);
 
-    @Query("SELECT DISTINCT b FROM Band b JOIN b.follower f WHERE f.id = :userId")
-    List<Band> findByFollowerId(@Param("userId") Long userId);
 
     boolean existsByNomeIgnoreCase(String nome);
 

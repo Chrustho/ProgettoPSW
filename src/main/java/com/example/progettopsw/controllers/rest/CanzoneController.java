@@ -54,14 +54,7 @@ public class CanzoneController {
                 : ResponseEntity.ok(songs);
     }
 
-    @GetMapping("/search/top_rated")
-    public ResponseEntity<?> trovaCanzoniConVotoMaggioreDi(
-            @RequestParam(defaultValue = "4.2") double minVoto) {
-        List<Canzone> songs = canzoneService.trovaCanzoniConVotoMaggioreDi(minVoto);
-        return songs.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(songs);
-    }
+
 
     @GetMapping("/search/by_genres")
     public ResponseEntity<?> cercaPerGeneri(
@@ -77,14 +70,7 @@ public class CanzoneController {
                 : ResponseEntity.ok(songs);
     }
 
-    @GetMapping("/most_reviewed")
-    public ResponseEntity<?> trovaCanzoniPiuRecensite(
-            @RequestParam(defaultValue = "1") long minRecensioni) {
-        List<Canzone> songs = canzoneService.trovaCanzoniPiuRecensite(minRecensioni);
-        return songs.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(songs);
-    }
+
 
     @GetMapping("/most_listened")
     public ResponseEntity<?> top10CanzoniPiuAscoltate() {

@@ -17,9 +17,6 @@ public interface GenereRepository extends JpaRepository<Genere, Long> {
 
     List<Genere> findByNomeStartingWithIgnoreCase(String prefix);
 
-    @Query("SELECT g FROM Genere g JOIN g.albums a " +
-            "GROUP BY g HAVING COUNT(a) >= :minAlbums")
-    List<Genere> findByMinAlbumCount(@Param("minAlbums") Long minAlbums);
 
     @Query("SELECT g FROM Genere g JOIN g.albums a " +
             "JOIN a.canzoni c GROUP BY g " +
@@ -36,8 +33,6 @@ public interface GenereRepository extends JpaRepository<Genere, Long> {
             "HAVING COUNT(f) > :minFollowers")
     List<Genere> findByTotalFollowersGreaterThan(@Param("minFollowers") Long minFollowers);
 
-    @Query("SELECT g FROM Genere g JOIN g.artisti a " +
-            "GROUP BY g HAVING COUNT(a) >= :minArtists")
-    List<Genere> findByMinArtistCount(@Param("minArtists") Long minArtists);
+
 
 }

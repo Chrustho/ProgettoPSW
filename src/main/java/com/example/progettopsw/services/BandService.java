@@ -34,10 +34,6 @@ public class BandService {
         return bandRepository.findByAllGenres(generi, (long) generi.size());
     }
 
-    @Transactional(readOnly = true)
-    public List<Band> trovaBandSeguiteDaUser(Long userId) {
-        return bandRepository.findByFollowerId(userId);
-    }
 
     @Transactional
     public Band aggiungiBand(Band band) {
