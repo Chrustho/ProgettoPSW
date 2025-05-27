@@ -14,6 +14,8 @@ public interface RecensioneAlbumRepository extends JpaRepository<RecensioneAlbum
 
     Optional<RecensioneAlbum> findById(Long id);
 
+    List<RecensioneAlbum> findByAlbumId(Long albumId);
+
     List<RecensioneAlbum> findByDataRecensioneAfter(LocalDate date);
 
     List<RecensioneAlbum> findByVotoBetween(double min, double max);

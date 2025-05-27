@@ -28,6 +28,11 @@ public class RecensioneAlbumService {
     }
 
     @Transactional(readOnly = true)
+    public List<RecensioneAlbum> trovaRecensioniDaAlbumId(Long id){
+        return recensioneAlbumRepository.findByAlbumId(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<RecensioneAlbum> trovaRecensioniDopo(LocalDate data) {
         return recensioneAlbumRepository.findByDataRecensioneAfter(data);
     }

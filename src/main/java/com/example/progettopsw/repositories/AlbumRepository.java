@@ -1,13 +1,14 @@
 package com.example.progettopsw.repositories;
 
 import com.example.progettopsw.entities.Album;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface AlbumRepository extends JpaRepository<Album, Long> {
+
+
     Optional<Album> findById(Long id);
 
     List<Album> findByArtistaNomeIgnoreCaseAndNomeIgnoreCase(String artistaNome, String nome);

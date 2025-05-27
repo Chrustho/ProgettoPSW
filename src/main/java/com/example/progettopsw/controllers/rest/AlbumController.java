@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/albums")
@@ -39,6 +40,14 @@ public class AlbumController {
         return albums.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(albums);
+    }
+
+    @GetMapping("search/byId")
+    public ResponseEntity<?> getById(@RequestParam(required = true) Long id) {
+        Optional<Album> album= albumService.getById(id);
+        return album.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(album.get());
     }
 
     @GetMapping("/search/by_artist_and_name")

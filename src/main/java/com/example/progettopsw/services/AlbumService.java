@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +28,13 @@ public class AlbumService {
         return albumRepository.findAll(PageRequest.of(pageNumber, pageSize, Sort.by(sortBy)))
                 .getContent();
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Album> getById(Long id){
+        return albumRepository.findById(id);
+    }
+
+
 
     @Transactional(readOnly = true)
     public List<Album> trovaAlbumTramiteArtistaENome(String nomeArtista, String nome) {

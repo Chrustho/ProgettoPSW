@@ -81,6 +81,14 @@ public class RecensioneAlbumController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(recensioni);
     }
+
+    @GetMapping("/album/{albumId}")
+    public ResponseEntity<?> trovaRecensioniAlbum(@PathVariable Long albumId) {
+        List<RecensioneAlbum> lista= recensioneAlbumService.trovaRecensioniDaAlbumId(albumId);
+        return lista.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(lista);
+    }
     
     @PostMapping("/review")
     public ResponseEntity<RecensioneAlbum> submitReview(@RequestBody @Validated RecensioneAlbum review) {
