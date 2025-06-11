@@ -20,6 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable()) /// Disabilita CSRF per il testing
                 // Configures authorization rules for different endpoints
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/").permitAll() // Allows public access to the root URL

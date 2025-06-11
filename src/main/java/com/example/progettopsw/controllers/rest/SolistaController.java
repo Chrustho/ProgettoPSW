@@ -5,7 +5,6 @@ import com.example.progettopsw.services.SolistaService;
 import com.example.progettopsw.support.ResponseMessage;
 import com.example.progettopsw.support.exceptions.SolistaGiaPresenteException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
