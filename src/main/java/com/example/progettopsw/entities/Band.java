@@ -18,6 +18,6 @@ public class Band extends Artista {
             joinColumns = @JoinColumn(name = "band_id"),
             inverseJoinColumns = @JoinColumn(name = "solista_id")
     )
-
+    @JsonIgnore
     private Set<Solista> membri = new HashSet<>();
 }
