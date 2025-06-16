@@ -17,6 +17,8 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 
     List<Album> findByRecensioniAlbumVotoGreaterThan(Double minVoto);
 
+    List<Album> findByArtista_Id(Long artistaId);
+
 
     List<Album> findByGeneriNomeIn(List<String> generi);
 

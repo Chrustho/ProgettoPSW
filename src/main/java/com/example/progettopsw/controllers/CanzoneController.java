@@ -1,4 +1,4 @@
-package com.example.progettopsw.controllers.rest;
+package com.example.progettopsw.controllers;
 
 import com.example.progettopsw.entities.Canzone;
 import com.example.progettopsw.services.CanzoneService;

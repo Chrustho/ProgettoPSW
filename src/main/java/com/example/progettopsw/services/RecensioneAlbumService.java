@@ -33,6 +33,12 @@ public class RecensioneAlbumService {
     }
 
     @Transactional(readOnly = true)
+    public Double calcolaVotoMedioAlbum(Long albumId) {
+        return recensioneAlbumRepository.findAverageRatingByAlbumId(albumId)
+                .orElse(0.0);
+    }
+
+    @Transactional(readOnly = true)
     public List<RecensioneAlbum> trovaRecensioniDopo(LocalDate data) {
         return recensioneAlbumRepository.findByDataRecensioneAfter(data);
     }

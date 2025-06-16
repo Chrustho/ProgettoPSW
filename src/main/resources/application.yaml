@@ -36,6 +36,7 @@ spring:
 
 
   # 3) CORS: permetti chiamate da Flutter (http://localhost:8083)
+
   web:
     cors:
       mappings:

@@ -1,4 +1,4 @@
-package com.example.progettopsw.controllers.rest;
+package com.example.progettopsw.controllers;
 
 import com.example.progettopsw.entities.Album;
 import com.example.progettopsw.services.AlbumService;
@@ -48,6 +48,17 @@ public class AlbumController {
         return album.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(album.get());
+    }
+
+    @GetMapping("/search/by_artist")
+    public ResponseEntity<?> getByArtista(@RequestParam(required = true) Long idArtista) {
+        if (idArtista == null || idArtista <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<Album> albums = albumService.trovaAlbumPerArtista(idArtista);
+        return albums.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(albums);
     }
 
     @GetMapping("/search/by_artist_and_name")

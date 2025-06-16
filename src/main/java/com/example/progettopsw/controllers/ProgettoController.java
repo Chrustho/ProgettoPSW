@@ -1,4 +1,4 @@
-package com.example.progettopsw.controllers.rest;
+package com.example.progettopsw.controllers;
 
 import org.springframework.ui.Model;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

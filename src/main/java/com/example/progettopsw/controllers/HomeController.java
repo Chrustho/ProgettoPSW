@@ -1,4 +1,4 @@
-package com.example.progettopsw.controllers.rest;
+package com.example.progettopsw.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

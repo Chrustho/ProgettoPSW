@@ -1,4 +1,4 @@
-package com.example.progettopsw.controllers.rest;
+package com.example.progettopsw.controllers;
 
 import com.example.progettopsw.entities.RecensioneAlbum;
 import com.example.progettopsw.services.RecensioneAlbumService;
@@ -94,5 +94,13 @@ public class RecensioneAlbumController {
     public ResponseEntity<RecensioneAlbum> submitReview(@RequestBody @Validated RecensioneAlbum review) {
         RecensioneAlbum savedReview = recensioneAlbumService.aggiungiRecensione(review);
         return ResponseEntity.ok(savedReview);
+    }
+
+    @GetMapping("/average_rating/{albumId}")
+    public ResponseEntity<Double> calcolaVotoMedioAlbum(@PathVariable Long albumId) {
+        Double averageRating = recensioneAlbumService.calcolaVotoMedioAlbum(albumId);
+        return averageRating != null
+                ? ResponseEntity.ok(averageRating)
+                : ResponseEntity.noContent().build();
     }
 }

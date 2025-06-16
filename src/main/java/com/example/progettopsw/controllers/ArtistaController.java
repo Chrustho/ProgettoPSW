@@ -1,4 +1,4 @@
-package com.example.progettopsw.controllers.rest;
+package com.example.progettopsw.controllers;
 
 import com.example.progettopsw.entities.Artista;
 import com.example.progettopsw.services.ArtistaService;
@@ -26,6 +26,13 @@ public class ArtistaController {
             return ResponseEntity.badRequest()
                     .body(new ResponseMessage("Artista già presente in catalogo"));
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> trovaArtistaPerId(@PathVariable Long id) {
+        return artistaService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/search/by_name")
@@ -82,6 +89,15 @@ public class ArtistaController {
     public ResponseEntity<?> artistiConReleaseRecenti(
             @RequestParam(defaultValue = "2") int years) {
         List<Artista> artisti = artistaService.artistiConReleaseRecenti(years);
+        return artisti.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(artisti);
+    }
+
+    @GetMapping("/by_avg_vote")
+    public ResponseEntity<?> trovaArtistiPerMediaVoti(
+            @RequestParam(defaultValue = "0.0") double votoMinimo) {
+        List<Artista> artisti = artistaService.trovaArtistiPerMediaVotiAlta(votoMinimo);
         return artisti.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(artisti);

@@ -1,8 +1,10 @@
-package com.example.progettopsw.controllers.rest;
+package com.example.progettopsw.controllers;
 
 import com.example.progettopsw.entities.Users;
+import com.example.progettopsw.services.KCService;
 import com.example.progettopsw.services.UserService;
 import com.example.progettopsw.support.ResponseMessage;
+import com.example.progettopsw.support.UserRegistrationRequest;
 import com.example.progettopsw.support.exceptions.EmailGiaRegistrataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,11 +19,13 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private KCService keycloakService;
 
     @PostMapping
-    public ResponseEntity aggiungiUtente(@RequestBody @Validated Users user){
+    public ResponseEntity aggiungiUtente(@RequestBody @Validated UserRegistrationRequest urq){
         try {
-            userService.registraUtente(user);
+            keycloakService.addUser(urq.getUser(), urq.getPassword());
         }catch (EmailGiaRegistrataException e){
             return new ResponseEntity(new ResponseMessage("Utente già presente!"), HttpStatus.BAD_REQUEST);
         }
@@ -50,6 +54,8 @@ public class UserController {
         }
         return new ResponseEntity(users,HttpStatus.OK);
     }
+
+
 
 
 

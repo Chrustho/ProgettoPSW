@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +27,11 @@ public class ArtistaService {
     @Transactional(readOnly = true)
     public List<Artista> trovaArtistiConNome(String nome) {
         return artistaRepository.findByNomeContainingIgnoreCase(nome);
+    }
+    
+    @Transactional(readOnly = true)
+    public Optional<Artista> findById(Long id) {
+        return artistaRepository.findById(id);
     }
 
 
@@ -69,6 +71,11 @@ public class ArtistaService {
             throw new ArtistaGiaPresenteException();
         }
         return artistaRepository.save(artista);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Artista> trovaArtistiPerMediaVotiAlta(double votoMinimo) {
+        return artistaRepository.findByAverageAlbumRatingGreaterThan(votoMinimo);
     }
 
     @Transactional(readOnly = true)

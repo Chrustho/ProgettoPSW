@@ -34,7 +34,10 @@ public class AlbumService {
         return albumRepository.findById(id);
     }
 
-
+    @Transactional(readOnly = true)
+    public List<Album> trovaAlbumPerArtista(Long idArtista) {
+        return albumRepository.findByArtista_Id(idArtista);
+    }
 
     @Transactional(readOnly = true)
     public List<Album> trovaAlbumTramiteArtistaENome(String nomeArtista, String nome) {

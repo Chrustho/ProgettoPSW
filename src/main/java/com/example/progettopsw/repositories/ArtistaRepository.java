@@ -27,6 +27,12 @@ public interface ArtistaRepository extends JpaRepository<Artista,Long> {
             @Param("minFollowers") Long minFollowers
     );
 
+    @Query("SELECT DISTINCT a FROM Artista a " +
+            "JOIN a.albums alb " +
+            "JOIN RecensioneAlbum r ON r.album = alb " +
+            "GROUP BY a " +
+            "HAVING AVG(r.voto) >= :votoMinimo")
+    List<Artista> findByAverageAlbumRatingGreaterThan(@Param("votoMinimo") double votoMinimo);
 
 
     List<Artista> findByGeneriNomeIn(List<String> generi);

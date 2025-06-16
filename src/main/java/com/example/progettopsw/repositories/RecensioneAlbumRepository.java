@@ -24,6 +24,10 @@ public interface RecensioneAlbumRepository extends JpaRepository<RecensioneAlbum
 
     List<RecensioneAlbum> findByAlbumIdOrderByDataRecensioneDesc(Long albumId);
 
+    //qury per ottenere voto medio di un album
+    @Query("SELECT AVG(r.voto) FROM RecensioneAlbum r WHERE r.album.id = :albumId")
+    Optional<Double> findAverageRatingByAlbumId(@Param("albumId") Long albumId);
+
     // Nuove query utili
     @Query("SELECT r FROM RecensioneAlbum r WHERE r.album.id = :albumId AND " +
             "LENGTH(r.testo) >= :minLength")
